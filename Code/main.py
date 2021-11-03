@@ -20,6 +20,7 @@ def main():
     TVA = TacticalVotingAnalyst(candidates, voters)
 
     print(TVA.get_winners())
+    print(TVA.overall_happiness())
 
     # E01.6
     # Set up Candidates
@@ -42,6 +43,7 @@ def main():
     TVA = TacticalVotingAnalyst(candidates, voters)
 
     print(TVA.get_winners())
+    print(TVA.overall_happiness())
 
 
 if __name__ == '__main__':

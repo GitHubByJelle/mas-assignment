@@ -1,5 +1,6 @@
 from VotingSituation import *
 from VotingSchemes import *
+import collections
 
 
 class TacticalVotingAnalyst:
@@ -11,6 +12,7 @@ class TacticalVotingAnalyst:
         """
         self.voting_situation = VotingSituation(candidates, voters)
         self.voting_schemes_dict = self.create_voting_vectors(len(candidates))
+        self.outcome = {}
 
     def create_voting_vectors(self, num_candidates):
         """
@@ -52,7 +54,7 @@ class TacticalVotingAnalyst:
             print()
 
         # Return the name of the best scoring candidate
-        return max(counter, key=counter.get)
+        return max(counter, key=counter.get), counter
 
     def get_winners(self):
         """
@@ -65,7 +67,9 @@ class TacticalVotingAnalyst:
 
         # For every voting scheme, determine the winner
         for voting_scheme in self.voting_schemes_dict.keys():
-            winners[voting_scheme] = self.get_winner(voting_scheme)
+            winner, counter = self.get_winner(voting_scheme)
+            winners[voting_scheme] = winner
+            self.outcome[voting_scheme] = collections.OrderedDict(dict(sorted(counter.items(), reverse=True, key=lambda item: item[1])))
 
         # Return the winner
         return winners
@@ -79,3 +83,16 @@ class TacticalVotingAnalyst:
         for candidate in self.voting_situation.candidates:
             counter[candidate.name] = 0
         return counter
+
+    def overall_happiness(self):
+        """
+        Determine the overall happiness for each of the voting schemes
+        """
+        overall_happiness = {}
+        for voting_scheme in self.voting_schemes_dict.keys():
+            happiness = 0
+            for voter in self.voting_situation.voters:
+                happiness += voter.determine_happiness(self.outcome[voting_scheme])
+            overall_happiness[voting_scheme] = happiness
+
+        return overall_happiness
