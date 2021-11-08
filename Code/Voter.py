@@ -1,12 +1,14 @@
+from Candidate import Candidate
+
 class Voter:
-    def __init__(self, Preferences):
+    def __init__(self, preferences:list[list[Candidate]]):
         """
         Initialise the preferences of the voter
         :param Preferences: List of objects from class Candidate
         """
         # Make disinction between true preferences and tactical preferences
-        self.true_preferences = Preferences
-        self.tactical_preferences = Preferences
+        self.true_preferences = preferences
+        self.tactical_preferences = preferences
 
     # Functions that could be created
     def determine_happiness(self, counter, type='borda'):
@@ -21,3 +23,6 @@ class Voter:
                 happiness += borda[i] * borda[list(counter.keys()).index(candidate.name)]
 
         return happiness
+
+    def update_tactical_preferences(self):
+        pass
