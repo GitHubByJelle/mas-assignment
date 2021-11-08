@@ -15,4 +15,4 @@ class VotingSituation:
     def add_candidate(self):
         pass
 
-    #def 
+    # def get_
