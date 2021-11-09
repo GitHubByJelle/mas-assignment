@@ -1,7 +1,8 @@
 from Candidate import Candidate
 
+
 class Voter:
-    def __init__(self, preferences:list[list[Candidate]]):
+    def __init__(self, preferences: list[list[Candidate]]):
         """
         Initialise the preferences of the voter
         :param Preferences: List of objects from class Candidate
@@ -11,16 +12,18 @@ class Voter:
         self.tactical_preferences = preferences
 
     # Functions that could be created
-    def determine_happiness(self, counter, type='borda'):
+    def determine_happiness(self, counter, type="borda"):
         """
         Determine self happiness
         :param counter: OrderedDict of candidates
         """
         happiness = 0
-        if type == 'borda':
+        if type == "borda":
             borda = [3, 2, 1, 0]
             for i, candidate in enumerate(self.tactical_preferences):
-                happiness += borda[i] * borda[list(counter.keys()).index(candidate.name)]
+                happiness += (
+                    borda[i] * borda[list(counter.keys()).index(candidate.name)]
+                )
 
         return happiness
 

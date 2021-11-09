@@ -20,10 +20,14 @@ class TacticalVotingAnalyst:
         :param num_candidates: Number of candidates
         :return: Dictionary with vectors for several voting schemes
         """
-        return {'plurality': create_vote_for_n_vector(1, num_candidates),
-                'vote for 2': create_vote_for_n_vector(2, num_candidates),
-                'borda count': create_borda_count(num_candidates),
-                'anti plurality': create_vote_for_n_vector(num_candidates - 1, num_candidates)}
+        return {
+            "plurality": create_vote_for_n_vector(1, num_candidates),
+            "vote for 2": create_vote_for_n_vector(2, num_candidates),
+            "borda count": create_borda_count(num_candidates),
+            "anti plurality": create_vote_for_n_vector(
+                num_candidates - 1, num_candidates
+            ),
+        }
 
     def get_winner(self, voting_scheme, print_winner=False):
         """
@@ -40,7 +44,9 @@ class TacticalVotingAnalyst:
             # Process all preferences
             for i in range(len(voter.tactical_preferences)):
                 # Add score to the counter dictionary
-                counter[voter.tactical_preferences[i].name] += self.voting_schemes_dict[voting_scheme][i]
+                counter[voter.tactical_preferences[i].name] += self.voting_schemes_dict[
+                    voting_scheme
+                ][i]
 
         # If the user wants to print results
         if print_winner:
@@ -69,7 +75,9 @@ class TacticalVotingAnalyst:
         for voting_scheme in self.voting_schemes_dict.keys():
             winner, counter = self.get_winner(voting_scheme)
             winners[voting_scheme] = winner
-            self.outcome[voting_scheme] = collections.OrderedDict(dict(sorted(counter.items(), reverse=True, key=lambda item: item[1])))
+            self.outcome[voting_scheme] = collections.OrderedDict(
+                dict(sorted(counter.items(), reverse=True, key=lambda item: item[1]))
+            )
 
         # Return the winner
         return winners
