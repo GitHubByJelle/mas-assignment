@@ -27,8 +27,9 @@ def main():
     # Create TVA
     TVA = TacticalVotingAnalyst(candidates, voters)
 
-    print(TVA.get_winners())
-    print(TVA.overall_happiness())
+    # print(TVA.get_winners())
+    # print(TVA.overall_happiness())
+    TVA.determine_tactical_options("borda count")
 
     # E01.6
     # Set up Candidates

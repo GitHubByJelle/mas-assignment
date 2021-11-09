@@ -51,10 +51,10 @@ class TacticalVotingAnalyst:
         # For every voter
         for voter in self.voting_situation.voters:
             # Process all preferences
-            for i in range(len(voter.tactical_preferences)):
+            for i in range(len(voter.true_preferences)):
                 # Add score to the counter dictionary
                 counter[
-                    voter.tactical_preferences[i].name
+                    voter.true_preferences[i].name
                 ] += self.voting_schemes_dict[voting_scheme][i]
 
         # If the user wants to print results
@@ -121,3 +121,32 @@ class TacticalVotingAnalyst:
             overall_happiness[voting_scheme] = happiness
 
         return overall_happiness
+
+    def determine_tactical_options(self, voting_scheme: str):
+        # Determine outcome
+        _, outcome = self.get_winner(voting_scheme)
+
+        print(outcome)
+
+        # Create list for tactical options
+        tactical_options = []
+
+        # For every voter that is in our situation
+        for voter in self.voting_situation.voters:
+            # Update tactical preference
+            voter.update_tactical_options(outcome, self.voting_situation.candidates,
+                                          self.voting_schemes_dict, voting_scheme)
+
+            # Save tactical options
+            tactical_options.append(voter.tactical_options)
+
+            print("Voter {}".format(voter.voter_id))
+            if len(voter.tactical_options) > 0:
+                for pref in voter.tactical_options:
+                    print("Happiness: {} -> {}, preference: {}, new outcome: {}".format(pref[2],
+                                    pref[1],
+                                    [cand.name for cand in pref[0]],
+                                    sorted(pref[3].items(), reverse=True, key=lambda item: item[1])))
+            print()
+
+        return tactical_options
