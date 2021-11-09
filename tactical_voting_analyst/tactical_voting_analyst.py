@@ -1,5 +1,6 @@
 from .voting_situation import *
 from .voting_schemes import *
+from .voter import Voter
 import collections
 from enum import IntEnum
 import numpy as np
@@ -13,23 +14,31 @@ class VotingType(IntEnum):
 
 
 class TacticalVotingAnalyst:
-    def __init__(self, candidates, voters):
+    def __init__(
+        self, candidates: np.ndarray[(5), np.int_], voters: list[Voter]
+    ):
         """
         Initialisation
         :param candidates: list of objects from class 'Candidate'
         :param voters: list of objects from class 'Voter'
         """
+        self.voting_shemes_names = [  # this will be mainly used for representation
+            "plurality",
+            "vote for 2",
+            "borda count",
+            "anti plurality",
+        ]
         self.voting_situation = VotingSituation(candidates, voters)
         self.voting_schemes_dict = self.create_voting_vectors(len(candidates))
         self.outcome = {}
 
-    def create_voting_vectors(self, num_candidates):
+    def create_voting_vectors(self, num_candidates: int) -> np.ndarray:
         """
         Create vectors for different voting schemes
         :param num_candidates: Number of candidates
         :return: Dictionary with vectors for several voting schemes
         """
-        return {
+        named_voting_vectors = {
             "plurality": create_vote_for_n_vector(1, num_candidates),
             "vote for 2": create_vote_for_n_vector(2, num_candidates),
             "borda count": create_borda_count(num_candidates),
@@ -37,8 +46,14 @@ class TacticalVotingAnalyst:
                 num_candidates - 1, num_candidates
             ),
         }
+        return np.array(
+            [
+                named_voting_vectors[voting_scheme_name]
+                for voting_scheme_name in self.voting_shemes_names
+            ]
+        )
 
-    def get_winner(self, voting_scheme, print_winner=False):
+    def get_winner(self, voting_scheme: str, print_winner=False) -> np.ndarray:
         """
         Determine the winner according to a specific voting scheme
         :param voting_scheme: String of which voting scheme to use

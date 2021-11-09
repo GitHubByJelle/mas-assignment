@@ -1,14 +1,16 @@
 from .candidate import Candidate
+import numpy as np
 
 
 class Voter:
-    def __init__(self, preferences: list[list[Candidate]]):
+    def __init__(self, preferences: np.ndarray):
         """
         Initialise the preferences of the voter
         :param Preferences: List of objects from class Candidate
         """
         # Make disinction between true preferences and tactical preferences
         self.true_preferences = preferences
+        # self._true_preferences_array =
         self.tactical_preferences = preferences
 
     # Functions that could be created
