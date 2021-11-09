@@ -2,12 +2,15 @@ from .voting_situation import *
 from .voting_schemes import *
 import collections
 from enum import IntEnum
+import numpy as np
+
 
 class VotingType(IntEnum):
     plurality = 1
     vote_for_two = 2
     borda_count = 3
     anti_plurality = 4
+
 
 class TacticalVotingAnalyst:
     def __init__(self, candidates, voters):
@@ -50,9 +53,9 @@ class TacticalVotingAnalyst:
             # Process all preferences
             for i in range(len(voter.tactical_preferences)):
                 # Add score to the counter dictionary
-                counter[voter.tactical_preferences[i].name] += self.voting_schemes_dict[
-                    voting_scheme
-                ][i]
+                counter[
+                    voter.tactical_preferences[i].name
+                ] += self.voting_schemes_dict[voting_scheme][i]
 
         # If the user wants to print results
         if print_winner:
@@ -60,7 +63,9 @@ class TacticalVotingAnalyst:
             print("Voting Scheme - {}:".format(voting_scheme))
             i = 1
             # Print sorted results (based on decreasing votes)
-            for k, v in sorted(counter.items(), key=lambda x: x[1], reverse=True):
+            for k, v in sorted(
+                counter.items(), key=lambda x: x[1], reverse=True
+            ):
                 print("{}) {}: {}".format(i, k, v))
                 i += 1
             print()
@@ -82,7 +87,11 @@ class TacticalVotingAnalyst:
             winner, counter = self.get_winner(voting_scheme)
             winners[voting_scheme] = winner
             self.outcome[voting_scheme] = collections.OrderedDict(
-                dict(sorted(counter.items(), reverse=True, key=lambda item: item[1]))
+                dict(
+                    sorted(
+                        counter.items(), reverse=True, key=lambda item: item[1]
+                    )
+                )
             )
 
         # Return the winner
@@ -106,7 +115,9 @@ class TacticalVotingAnalyst:
         for voting_scheme in self.voting_schemes_dict.keys():
             happiness = 0
             for voter in self.voting_situation.voters:
-                happiness += voter.determine_happiness(self.outcome[voting_scheme])
+                happiness += voter.determine_happiness(
+                    self.outcome[voting_scheme]
+                )
             overall_happiness[voting_scheme] = happiness
 
         return overall_happiness

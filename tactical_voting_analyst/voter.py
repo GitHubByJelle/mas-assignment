@@ -1,4 +1,4 @@
-from .Candidate import Candidate
+from .candidate import Candidate
 
 
 class Voter:
