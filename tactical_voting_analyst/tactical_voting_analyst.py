@@ -1,6 +1,6 @@
-from .voting_situation import *
-from .voting_schemes import *
-from .voter import Voter
+from voting_situation import *
+from voting_schemes import *
+from voter import Voter
 import collections
 from enum import IntEnum
 import numpy as np
@@ -29,8 +29,7 @@ class TacticalVotingAnalyst:
             "anti plurality",
         ]
         self.voting_situation = VotingSituation(candidates, voters)
-        self.voting_schemes_dict = self.create_voting_vectors(len(candidates))
-        self.outcome = {}
+        self.voting_schemes = self.create_voting_vectors(len(candidates))
 
     def create_voting_vectors(self, num_candidates: int) -> np.ndarray:
         """
@@ -53,26 +52,25 @@ class TacticalVotingAnalyst:
             ]
         )
 
-    def get_winner(self, voting_scheme: str, print_winner=False) -> np.ndarray:
+    def get_winner(self, voting_scheme: np.ndarray, print_winner=False) -> np.ndarray:
         """
-        Determine the winner according to a specific voting scheme
-        :param voting_scheme: String of which voting scheme to use
+        Determine the total number of votes per candidate according to a specific voting scheme
+        :param voting_scheme: voting scheme ndarray
         :param print_winner: bool that indicates if the results from this voting scheme should be printed
-        :return: The name (string) of the candidate that won according to the specified voting scheme
+        :return: ndarray of shape (len(candidates),) containing # votes for each candidate
         """
         # Create a counter for every candidate
-        counter = self.create_count_dict()
+        counter = np.zeros(len(self.voting_situation.candidates))
 
         # For every voter
         for voter in self.voting_situation.voters:
             # Process all preferences
-            for i in range(len(voter.true_preferences)):
+            for i in range(len(voter.true_preferences[0])):
                 # Add score to the counter dictionary
-                counter[
-                    voter.true_preferences[i].name
-                ] += self.voting_schemes_dict[voting_scheme][i]
+                counter[voter.true_preferences[0][i]] += voting_scheme[i]
 
         # If the user wants to print results
+        #Todo: numpy-ize code bellow
         if print_winner:
             # Print voting scheme
             print("Voting Scheme - {}:".format(voting_scheme))
@@ -85,8 +83,7 @@ class TacticalVotingAnalyst:
                 i += 1
             print()
 
-        # Return the name of the best scoring candidate
-        return max(counter, key=counter.get), counter
+        return counter
 
     def get_winners(self):
         """
@@ -117,6 +114,7 @@ class TacticalVotingAnalyst:
         Create a dictionary for every candidate with value 0 (for counting)
         :return: A dictionary for every candidate with value 0 (for counting)
         """
+        #ToDo: do we need this function? This could be replaced by a np.zeros(len(candidates))
         counter = {}
         for candidate in self.voting_situation.candidates:
             counter[candidate.name] = 0
