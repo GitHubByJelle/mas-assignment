@@ -34,7 +34,8 @@ def main():
     # print(TVA.overall_happiness())
     # TVA.determine_tactical_options("borda count")
     print(f"{TVA.get_winners()=}")
-    print(f"{TVA.overall_happiness(TVA.voting_schemes[0])=}")
+    for voting_scheme in TVA.voting_schemes:
+        print(f"{TVA.overall_happiness(voting_scheme)=}")
 
     """
     # E01.6

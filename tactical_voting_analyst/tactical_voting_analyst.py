@@ -19,8 +19,8 @@ class TacticalVotingAnalyst:
     ):
         """
         Initialisation
-        :param candidates: list of objects from class 'Candidate'
-        :param voters: list of objects from class 'Voter'
+        :param candidates: ndarray of objects from class 'Candidate' np.ndarray[5, np.int_]
+        :param voters: list[Voter]
         """
         self.voting_shemes_names = [  # this will be mainly used for representation
             "plurality",
@@ -87,26 +87,17 @@ class TacticalVotingAnalyst:
 
     def get_winners(self):
         """
-        Determine the winner for all different voting schemes
+        Determine the ranked_candidates for all different voting schemes
         :return: Dictionary with the name of each candidate that won
         """
+        # Create ndarray
+        winners = np.zeros((len(self.voting_schemes), len(self.voting_situation.candidates)))
 
-        # Create empty dictionary
-        winners = {}
+        # For every voting scheme, determine the ranked list of candidates
+        for i, voting_scheme in enumerate(self.voting_schemes):
+            winners[i] = np.argsort(self.get_winner(voting_scheme))
 
-        # For every voting scheme, determine the winner
-        for voting_scheme in self.voting_schemes_dict.keys():
-            winner, counter = self.get_winner(voting_scheme)
-            winners[voting_scheme] = winner
-            self.outcome[voting_scheme] = collections.OrderedDict(
-                dict(
-                    sorted(
-                        counter.items(), reverse=True, key=lambda item: item[1]
-                    )
-                )
-            )
-
-        # Return the winner
+        # Return the ranked_candidates
         return winners
 
     def create_count_dict(self):
@@ -120,20 +111,18 @@ class TacticalVotingAnalyst:
             counter[candidate.name] = 0
         return counter
 
-    def overall_happiness(self):
+    def overall_happiness(self, voting_scheme: np.ndarray):
         """
         Determine the overall happiness for each of the voting schemes
         """
-        overall_happiness = {}
-        for voting_scheme in self.voting_schemes_dict.keys():
-            happiness = 0
-            for voter in self.voting_situation.voters:
-                happiness += voter.determine_happiness(
-                    self.outcome[voting_scheme]
-                )
-            overall_happiness[voting_scheme] = happiness
+        #ToDO: find most efficient way to do this
+        ranked_candidates_id = np.argsort(-self.get_winner(voting_scheme))
 
-        return overall_happiness
+        happiness = 0
+        for voter in self.voting_situation.voters:
+            happiness += voter.determine_happiness(ranked_candidates_id)
+
+        return happiness
 
     # def determine_tactical_options(self, voting_scheme: str):
     #     """

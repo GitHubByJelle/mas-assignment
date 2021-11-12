@@ -21,23 +21,20 @@ class Voter:
         self.tactical_preferences = preferences
 
     # Functions that could be created
-    def determine_happiness(self, outcome: dict[str, int], voting_scheme : str ="borda"):
+    def determine_happiness(self, ranked_candidates_id: np.ndarray, happiness_scheme: str = "borda count"):
         """
         Determine self happiness
-        :param outcome: Dict of outcome (based on score, decreased)
+        :param happiness_scheme: type of happiness measurement
+        :param ranked_candidates_id: ranked ndarray of 1 dimension
+        ranked_candidates_id[1] = 3 means that candidate with id=3 ranked second in the final outcome
         """
-
-        # Sort outcome
-        sorted_outcome = [x[0] for x in sorted(outcome.items(), reverse=True, key=lambda item: item[1])]
 
         # Count happiness
         happiness = 0
-        if voting_scheme == "borda count":
+        if happiness_scheme == "borda count":
             borda = [3, 2, 1, 0]
-            for i, candidate in enumerate(self.true_preferences):
-                happiness += (
-                    borda[i] * borda[sorted_outcome.index(candidate.name)]
-                )
+            for i, candidate in enumerate(self.true_preferences[0]):
+                happiness += borda[i] * borda[np.nonzero(ranked_candidates_id == candidate)[0][0]]
 
         return happiness
 
