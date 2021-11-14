@@ -1,8 +1,9 @@
 from argparse import ArgumentParser
-from tactical_voting_analyst import *
+from .tactical_voting_analyst import *
 
 # from .candidate import *
-from voter import *
+from .voter import *
+from .voting_schemes import VotingScheme
 import numpy as np
 
 
@@ -37,8 +38,10 @@ def main():
     # print(TVA.overall_happiness())
     # TVA.determine_tactical_options("borda count")
     print(f"{TVA.get_winners()=}")
-    for voting_scheme in TVA.voting_schemes:
-        print(f"{TVA.overall_happiness(voting_scheme)=}")
+    for voting_scheme in VotingScheme:
+        print(
+            f"Overall happiness {voting_scheme} = {TVA.overall_happiness(voting_scheme)}"
+        )
 
     """
     # E01.6
