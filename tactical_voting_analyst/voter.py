@@ -47,7 +47,20 @@ class Voter:
                         np.nonzero(ranked_candidates_id == candidate)[0][0]
                     ]
                 )
-
+        if happiness_scheme == VotingScheme.linear_weight:
+            weights = np.arange(len(ranked_candidates_id), 0, -1)
+            for i, candidate in enumerate(self.true_preferences[0]):
+                happiness += (
+                        weights[i]
+                        * (self.true_preferences[0][i] - ranked_candidates_id[i])
+                )
+        if happiness_scheme == VotingScheme.squared_weight:
+            weights = np.square(np.arange(len(ranked_candidates_id), 0, -1))
+            for i, candidate in enumerate(self.true_preferences[0]):
+                happiness += (
+                        weights[i]
+                        * (self.true_preferences[0][i] - ranked_candidates_id[i])
+                )
         return happiness
 
     def update_tactical_options(

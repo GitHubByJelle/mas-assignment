@@ -7,7 +7,8 @@ class VotingScheme(IntEnum):
     vote_for_two = 1
     borda_count = 2
     anti_plurality = 3
-
+    linear_weight = 4
+    squared_weight = 5
 
 # Can be used for plurality, vote for n, anti-plurality
 def create_vote_for_n_vector(n, num_candidates):
