@@ -7,13 +7,13 @@ import numpy as np
 
 
 class TacticalVotingAnalyst:
-    def __init__(self, candidates: np.ndarray, voters: list[Voter]):
+    def __init__(self, candidates: np.ndarray, candidate_names: tuple[str], voters: list[Voter]):
         """
         Initialisation
         :param candidates: ndarray of objects from class 'Candidate' np.ndarray[5, np.int_]
         :param voters: list[Voter]
         """
-        self.voting_situation = VotingSituation(candidates, voters)
+        self.voting_situation = VotingSituation(candidates, candidate_names, voters)
         self.voting_schemes = self.create_voting_vectors(len(candidates))
 
     def create_voting_vectors(self, num_candidates: int) -> np.ndarray:
@@ -55,16 +55,23 @@ class TacticalVotingAnalyst:
                 # Add score to the counter dictionary
                 counter[voter.true_preferences[0][i]] += voting_scheme[i]
 
+        # print(counter)
+
         # If the user wants to print results
-        # Todo: numpy-ize code bellow
+        # Todo: numpy-ize code bellow: DONE
         if print_winner:
             # Print voting scheme
             print("Voting Scheme - {}:".format(voting_scheme))
-            i = 1
-            # Print sorted results (based on decreasing votes)
-            for k, v in sorted(counter.items(), key=lambda x: x[1], reverse=True):
-                print("{}) {}: {}".format(i, k, v))
-                i += 1
+            sorting = counter.copy().argsort()[::-1]
+            for i in sorting:
+                print("{}: {}.".format(self.voting_situation.candidate_names[i],
+                                       counter[i]))
+
+            # i = 1
+            # # Print sorted results (based on decreasing votes)
+            # for k, v in sorted(counter.items(), key=lambda x: x[1], reverse=True):
+            #     print("{}) {}: {}".format(i, k, v))
+            #     i += 1
             print()
 
         return counter
@@ -107,7 +114,8 @@ class TacticalVotingAnalyst:
         Determine the overall happiness for each of the voting schemes
         """
         # ToDO: find most efficient way to do this
-        ranked_candidates_id = np.argsort(-self.get_winner(voting_scheme))
+        # ranked_candidates_id = np.argsort(-self.get_winner(voting_scheme))
+        ranked_candidates_id = np.argsort(self.get_winner(voting_scheme))[::-1]
 
         happiness = 0
         for voter in self.voting_situation.voters:
