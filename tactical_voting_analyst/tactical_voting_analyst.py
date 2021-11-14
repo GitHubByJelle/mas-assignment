@@ -50,10 +50,12 @@ class TacticalVotingAnalyst:
 
         # For every voter
         for voter in self.voting_situation.voters:
-            # Process all preferences
-            for i in range(len(voter.true_preferences[0])):
-                # Add score to the counter dictionary
-                counter[voter.true_preferences[0][i]] += voting_scheme[i]
+            # Add score to preference of voter
+            counter[voter.true_preferences[0]] += voting_scheme
+
+            # for i in range(len(voter.true_preferences[0])):
+            #     # Add score to the counter dictionary
+            #     counter[voter.true_preferences[0][i]] += voting_scheme[i]
 
         # print(counter)
 
