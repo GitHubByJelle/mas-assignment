@@ -115,7 +115,7 @@ class TacticalVotingAnalyst:
 
         return happiness
 
-    def determine_tactical_options(self, voting_scheme: str):
+    def determine_tactical_options(self, voting_scheme: VotingScheme):
         """
          Determine the tactical voting options for all voters
          :param voting_scheme: String of selected voting scheme

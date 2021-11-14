@@ -43,7 +43,9 @@ class Voter:
             for i, candidate in enumerate(self.true_preferences[0]):
                 happiness += (
                     borda[i]
-                    * borda[np.nonzero(ranked_candidates_id == candidate)[0][0]]
+                    * borda[
+                        np.nonzero(ranked_candidates_id == candidate)[0][0]
+                    ]
                 )
 
         return happiness
@@ -65,7 +67,9 @@ class Voter:
         self.tactical_options = []
         ranked_candidates_id = np.arange(len(outcome))[np.argsort(outcome)]
         # Determine current happiness
-        curr_happiness = self.determine_happiness(ranked_candidates_id, voting_scheme)
+        curr_happiness = self.determine_happiness(
+            ranked_candidates_id, voting_scheme
+        )
 
         # Determine outcome without voter
         blank_outcome = self.remove_pref_outcome(
@@ -81,7 +85,9 @@ class Voter:
             )
 
             # Calculate new happiness
-            new_happiness = self.determine_happiness(new_outcome, voting_scheme)
+            new_happiness = self.determine_happiness(
+                new_outcome, voting_scheme
+            )
 
             # If it's a better happiness, save
             if new_happiness > curr_happiness:
