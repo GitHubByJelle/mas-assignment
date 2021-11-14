@@ -1,5 +1,6 @@
 from argparse import ArgumentParser
 from tactical_voting_analyst import *
+
 # from .candidate import *
 from voter import *
 import numpy as np
@@ -9,7 +10,10 @@ def main():
     # E01.3
     # Set up Candidates
     candidates_names = [
-        "A", "B", "C", "D",
+        "A",
+        "B",
+        "C",
+        "D",
     ]  # will be used only for representation
     candidates = np.arange(
         len(candidates_names)
@@ -28,7 +32,6 @@ def main():
     voters = [Voter(np.expand_dims(preference, 0)) for preference in preferences]
     # Create TVA
     TVA = TacticalVotingAnalyst(candidates, voters)
-
 
     # print(TVA.get_winners())
     # print(TVA.overall_happiness())

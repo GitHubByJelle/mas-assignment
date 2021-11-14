@@ -1,6 +1,8 @@
 import itertools
+
 # from .candidate import Candidate
 import numpy as np
+
 
 class Voter:
     v_id = 0
@@ -21,7 +23,9 @@ class Voter:
         self.tactical_preferences = preferences
 
     # Functions that could be created
-    def determine_happiness(self, ranked_candidates_id: np.ndarray, happiness_scheme: str = "borda count"):
+    def determine_happiness(
+        self, ranked_candidates_id: np.ndarray, happiness_scheme: str = "borda count"
+    ):
         """
         Determine self happiness
         :param happiness_scheme: type of happiness measurement
@@ -34,7 +38,10 @@ class Voter:
         if happiness_scheme == "borda count":
             borda = [3, 2, 1, 0]
             for i, candidate in enumerate(self.true_preferences[0]):
-                happiness += borda[i] * borda[np.nonzero(ranked_candidates_id == candidate)[0][0]]
+                happiness += (
+                    borda[i]
+                    * borda[np.nonzero(ranked_candidates_id == candidate)[0][0]]
+                )
 
         return happiness
 

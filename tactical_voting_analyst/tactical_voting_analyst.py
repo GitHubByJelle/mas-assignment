@@ -14,9 +14,7 @@ class VotingType(IntEnum):
 
 
 class TacticalVotingAnalyst:
-    def __init__(
-        self, candidates: np.ndarray[(5), np.int_], voters: list[Voter]
-    ):
+    def __init__(self, candidates: np.ndarray[(5), np.int_], voters: list[Voter]):
         """
         Initialisation
         :param candidates: ndarray of objects from class 'Candidate' np.ndarray[5, np.int_]
@@ -70,15 +68,13 @@ class TacticalVotingAnalyst:
                 counter[voter.true_preferences[0][i]] += voting_scheme[i]
 
         # If the user wants to print results
-        #Todo: numpy-ize code bellow
+        # Todo: numpy-ize code bellow
         if print_winner:
             # Print voting scheme
             print("Voting Scheme - {}:".format(voting_scheme))
             i = 1
             # Print sorted results (based on decreasing votes)
-            for k, v in sorted(
-                counter.items(), key=lambda x: x[1], reverse=True
-            ):
+            for k, v in sorted(counter.items(), key=lambda x: x[1], reverse=True):
                 print("{}) {}: {}".format(i, k, v))
                 i += 1
             print()
@@ -91,7 +87,9 @@ class TacticalVotingAnalyst:
         :return: Dictionary with the name of each candidate that won
         """
         # Create ndarray
-        winners = np.zeros((len(self.voting_schemes), len(self.voting_situation.candidates)))
+        winners = np.zeros(
+            (len(self.voting_schemes), len(self.voting_situation.candidates))
+        )
 
         # For every voting scheme, determine the ranked list of candidates
         for i, voting_scheme in enumerate(self.voting_schemes):
@@ -105,7 +103,7 @@ class TacticalVotingAnalyst:
         Create a dictionary for every candidate with value 0 (for counting)
         :return: A dictionary for every candidate with value 0 (for counting)
         """
-        #ToDo: do we need this function? This could be replaced by a np.zeros(len(candidates))
+        # ToDo: do we need this function? This could be replaced by a np.zeros(len(candidates))
         counter = {}
         for candidate in self.voting_situation.candidates:
             counter[candidate.name] = 0
@@ -115,7 +113,7 @@ class TacticalVotingAnalyst:
         """
         Determine the overall happiness for each of the voting schemes
         """
-        #ToDO: find most efficient way to do this
+        # ToDO: find most efficient way to do this
         ranked_candidates_id = np.argsort(-self.get_winner(voting_scheme))
 
         happiness = 0
