@@ -50,16 +50,18 @@ class Voter:
         if happiness_scheme == VotingScheme.linear_weight:
             weights = np.arange(len(ranked_candidates_id), 0, -1)
             for i, candidate in enumerate(self.true_preferences[0]):
+                outcome_index = np.where(ranked_candidates_id == self.true_preferences[0][i])
                 happiness += (
                         weights[i]
-                        * (self.true_preferences[0][i] - ranked_candidates_id[i])
+                        * (i - outcome_index[0][0])
                 )
         if happiness_scheme == VotingScheme.squared_weight:
             weights = np.square(np.arange(len(ranked_candidates_id), 0, -1))
             for i, candidate in enumerate(self.true_preferences[0]):
+                outcome_index = np.where(ranked_candidates_id == self.true_preferences[0][i])
                 happiness += (
                         weights[i]
-                        * (self.true_preferences[0][i] - ranked_candidates_id[i])
+                        * (i - outcome_index[0][0])
                 )
         return happiness
 
