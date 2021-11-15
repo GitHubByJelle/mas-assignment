@@ -41,7 +41,7 @@ class Voter:
         # Count happiness
         happiness = 0
         if happiness_scheme == HappinessScheme.borda_count:
-            borda = [3, 2, 1, 0]
+            borda = np.arange(len(ranked_candidates_id)-1, -1, -1)
             for i, candidate in enumerate(self.true_preferences[0]):
                 happiness += (
                     borda[i]

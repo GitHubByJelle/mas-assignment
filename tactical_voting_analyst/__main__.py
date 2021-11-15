@@ -36,7 +36,7 @@ def main():
 
     #print("\n", TVA.get_winner(np.array([3., 2., 1., 0.]), True))
     # print(TVA.overall_happiness())
-    TVA.determine_tactical_options(VotingScheme.borda_count, HappinessScheme.linear_weight)
+    TVA.determine_tactical_options(VotingScheme.borda_count, HappinessScheme.borda_count)
     # print(f"{TVA.get_winners()=}")
     # for voting_scheme in VotingScheme:
     #     print(
