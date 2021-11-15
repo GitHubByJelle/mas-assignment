@@ -64,7 +64,7 @@ class TacticalVotingAnalyst:
         if print_winner:
             # Print voting scheme
             print("Voting Scheme - {}:".format(voting_scheme))
-            sorting = counter.copy().argsort()[::-1]
+            sorting = (-counter).copy().argsort()
             for i in sorting:
                 print("{}: {}.".format(self.voting_situation.candidate_names[i],
                                        counter[i]))
@@ -117,7 +117,7 @@ class TacticalVotingAnalyst:
         """
         # ToDO: find most efficient way to do this
         # ranked_candidates_id = np.argsort(-self.get_winner(voting_scheme))
-        ranked_candidates_id = np.argsort(self.get_winner(voting_scheme))[::-1]
+        ranked_candidates_id = np.argsort(-self.get_winner(voting_scheme))
 
         happiness = 0
         for voter in self.voting_situation.voters:
@@ -132,9 +132,10 @@ class TacticalVotingAnalyst:
          :return: All tactical options
          """
         # Determine outcome
-        _, outcome = self.get_winner(voting_scheme)
+        outcome = self.get_winner(self.voting_schemes[voting_scheme])
 
-        print(outcome)
+        # Print current outcome
+        print("Current outcome: {}\n".format(self.create_outcome_str(outcome)))
 
         # Create list for tactical options
         tactical_options = []
@@ -144,8 +145,7 @@ class TacticalVotingAnalyst:
             # Update tactical preference
             voter.update_tactical_options(
                 outcome,
-                self.voting_situation.candidates,
-                self.voting_schemes_dict,
+                self.voting_schemes[voting_scheme],
                 voting_scheme,
             )
 
@@ -156,15 +156,23 @@ class TacticalVotingAnalyst:
             if len(voter.tactical_options) > 0:
                 for pref in voter.tactical_options:
                     print(
-                        "Happiness: {} -> {}, preference: {}, new outcome: {}".format(
-                            pref[2],
+                        "Happiness: {} -> {}, tactical preference: {}, new outcome: {}".format(
                             pref[1],
-                            [cand.name for cand in pref[0]],
-                            sorted(
-                                pref[3].items(), reverse=True, key=lambda item: item[1]
-                            ),
+                            pref[2],
+                            " > ".join(self.voting_situation.candidate_names[pref[0]]),
+                            self.create_outcome_str(pref[3]),
                         )
                     )
             print()
 
         return tactical_options
+
+    def create_outcome_str(self, outcome: np.ndarray) -> str:
+        """
+        Creates a string as output for a given outcome (adding candidate names)
+        :param outcome: Social outcome of votings (vector, where each value represents a candidate)
+        :return: String with names added
+        """
+        return ", ".join(np.core.defchararray.add(
+            np.core.defchararray.add(self.voting_situation.candidate_names, ": "),
+                                                  outcome.astype(np.int32).astype(str))[(-outcome).argsort()])

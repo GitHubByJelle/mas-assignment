@@ -47,22 +47,22 @@ class Voter:
                         np.nonzero(ranked_candidates_id == candidate)[0][0]
                     ]
                 )
-        if happiness_scheme == VotingScheme.linear_weight:
-            weights = np.arange(len(ranked_candidates_id), 0, -1)
-            for i, candidate in enumerate(self.true_preferences[0]):
-                outcome_index = np.where(ranked_candidates_id == self.true_preferences[0][i])
-                happiness += (
-                        weights[i]
-                        * (i - outcome_index[0][0])
-                )
-        if happiness_scheme == VotingScheme.squared_weight:
-            weights = np.square(np.arange(len(ranked_candidates_id), 0, -1))
-            for i, candidate in enumerate(self.true_preferences[0]):
-                outcome_index = np.where(ranked_candidates_id == self.true_preferences[0][i])
-                happiness += (
-                        weights[i]
-                        * (i - outcome_index[0][0])
-                )
+        # if happiness_scheme == VotingScheme.linear_weight:
+        #     weights = np.arange(len(ranked_candidates_id), 0, -1)
+        #     for i, candidate in enumerate(self.true_preferences[0]):
+        #         outcome_index = np.where(ranked_candidates_id == self.true_preferences[0][i])
+        #         happiness += (
+        #                 weights[i]
+        #                 * (i - outcome_index[0][0])
+        #         )
+        # if happiness_scheme == VotingScheme.squared_weight:
+        #     weights = np.square(np.arange(len(ranked_candidates_id), 0, -1))
+        #     for i, candidate in enumerate(self.true_preferences[0]):
+        #         outcome_index = np.where(ranked_candidates_id == self.true_preferences[0][i])
+        #         happiness += (
+        #                 weights[i]
+        #                 * (i - outcome_index[0][0])
+        #         )
         return happiness
 
     def update_tactical_options(
@@ -74,16 +74,15 @@ class Voter:
         """
          Determine the tactical options for each votes
          :param outcome: Outcome of the real preferences
-         :param candidates: List of all candidates
-         :param voting_scheme_dict: Dictionary of vectors for all voting_schemes
+         :param voting_scheme_vector: vector of voting_scheme
          :param voting_scheme: String of selected voting scheme
          """
         # Reset tactical preferences
         self.tactical_options = []
-        ranked_candidates_id = np.arange(len(outcome))[np.argsort(outcome)]
+
         # Determine current happiness
         curr_happiness = self.determine_happiness(
-            ranked_candidates_id, voting_scheme
+            self.outcome_to_ranked_ids(outcome), voting_scheme
         )
 
         # Determine outcome without voter
@@ -93,7 +92,9 @@ class Voter:
 
         # For every permutation of preferences
         for perm in itertools.permutations(np.arange(len(outcome))):
+            # Create an array
             perm = np.array(perm)
+
             # Determine new outcome
             new_outcome = self.add_pref_outcome(
                 blank_outcome.copy(), perm, voting_scheme_vector
@@ -101,7 +102,7 @@ class Voter:
 
             # Calculate new happiness
             new_happiness = self.determine_happiness(
-                new_outcome, voting_scheme
+                self.outcome_to_ranked_ids(new_outcome), voting_scheme
             )
 
             # If it's a better happiness, save
@@ -111,7 +112,7 @@ class Voter:
                 )
 
         # Sort tactical options based on score
-        self.tactical_options.sort(key=lambda x: -x[1])
+        self.tactical_options.sort(key=lambda x: -x[2])
 
     def remove_pref_outcome(
         self,
@@ -123,11 +124,11 @@ class Voter:
          Remove preference from outcome
          :param outcome: Current outcome
          :param preference: Preference to remove
-         :param voting_scheme_vector: Lisrt of voting_scheme
+         :param voting_scheme_vector: List of voting_scheme
          :return: Outcome after removing preference
         """
         outcome = outcome.copy()
-        sorting_idxs = np.argsort(preference)
+        sorting_idxs = preference.argsort()[0]
         sorted_voting_scheme = voting_scheme_vector[sorting_idxs]
         outcome -= sorted_voting_scheme
         return outcome
@@ -149,3 +150,12 @@ class Voter:
         sorted_voting_scheme = voting_scheme_vector[sorting_idxs]
         outcome += sorted_voting_scheme
         return outcome
+
+    def outcome_to_ranked_ids(self, outcome: np.ndarray)\
+            -> np.ndarray:
+        """
+        Sort outcome (based on scores) to rank ids
+        :param outcome: Social outcome based on voting scheme
+        :return: Ranks of each candidate (based on social outcome)
+        """
+        return (-outcome).argsort()
