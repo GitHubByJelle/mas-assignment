@@ -1,3 +1,4 @@
+from .happiness_schemes import HappinessScheme
 from .voting_schemes import VotingScheme
 import itertools
 
@@ -27,7 +28,8 @@ class Voter:
     def determine_happiness(
         self,
         ranked_candidates_id: np.ndarray,
-        happiness_scheme: VotingScheme = VotingScheme.borda_count,
+        voting_scheme: VotingScheme = VotingScheme.borda_count,
+        happiness_scheme: HappinessScheme = HappinessScheme.borda_count,
     ):
         """
         Determine self happiness
@@ -38,7 +40,7 @@ class Voter:
 
         # Count happiness
         happiness = 0
-        if happiness_scheme == VotingScheme.borda_count:
+        if happiness_scheme == HappinessScheme.borda_count:
             borda = [3, 2, 1, 0]
             for i, candidate in enumerate(self.true_preferences[0]):
                 happiness += (
@@ -47,22 +49,22 @@ class Voter:
                         np.nonzero(ranked_candidates_id == candidate)[0][0]
                     ]
                 )
-        # if happiness_scheme == VotingScheme.linear_weight:
-        #     weights = np.arange(len(ranked_candidates_id), 0, -1)
-        #     for i, candidate in enumerate(self.true_preferences[0]):
-        #         outcome_index = np.where(ranked_candidates_id == self.true_preferences[0][i])
-        #         happiness += (
-        #                 weights[i]
-        #                 * (i - outcome_index[0][0])
-        #         )
-        # if happiness_scheme == VotingScheme.squared_weight:
-        #     weights = np.square(np.arange(len(ranked_candidates_id), 0, -1))
-        #     for i, candidate in enumerate(self.true_preferences[0]):
-        #         outcome_index = np.where(ranked_candidates_id == self.true_preferences[0][i])
-        #         happiness += (
-        #                 weights[i]
-        #                 * (i - outcome_index[0][0])
-        #         )
+        if happiness_scheme == HappinessScheme.linear_weight:
+            weights = np.arange(len(ranked_candidates_id), 0, -1)
+            for i, candidate in enumerate(self.true_preferences[0]):
+                outcome_index = np.where(ranked_candidates_id == self.true_preferences[0][i])
+                happiness += (
+                        weights[i]
+                        * (i - outcome_index[0][0])
+                )
+        if happiness_scheme == HappinessScheme.squared_weight:
+            weights = np.square(np.arange(len(ranked_candidates_id), 0, -1))
+            for i, candidate in enumerate(self.true_preferences[0]):
+                outcome_index = np.where(ranked_candidates_id == self.true_preferences[0][i])
+                happiness += (
+                        weights[i]
+                        * (i - outcome_index[0][0])
+                )
         return happiness
 
     def update_tactical_options(
@@ -70,6 +72,7 @@ class Voter:
         outcome: np.ndarray,
         voting_scheme_vector: np.ndarray,
         voting_scheme: VotingScheme = VotingScheme.borda_count,
+        happiness_scheme: HappinessScheme = HappinessScheme.borda_count,
     ):
         """
          Determine the tactical options for each votes
@@ -82,7 +85,7 @@ class Voter:
 
         # Determine current happiness
         curr_happiness = self.determine_happiness(
-            self.outcome_to_ranked_ids(outcome), voting_scheme
+            self.outcome_to_ranked_ids(outcome), voting_scheme, happiness_scheme
         )
 
         # Determine outcome without voter
@@ -102,7 +105,7 @@ class Voter:
 
             # Calculate new happiness
             new_happiness = self.determine_happiness(
-                self.outcome_to_ranked_ids(new_outcome), voting_scheme
+                self.outcome_to_ranked_ids(new_outcome), voting_scheme, happiness_scheme
             )
 
             # If it's a better happiness, save
