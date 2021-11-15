@@ -34,9 +34,9 @@ def main():
     # Create TVA
     TVA = TacticalVotingAnalyst(candidates, candidates_names, voters)
 
-    print("\n", TVA.get_winner(np.array([3., 2., 1., 0.]), True))
+    #print("\n", TVA.get_winner(np.array([3., 2., 1., 0.]), True))
     # print(TVA.overall_happiness())
-    # TVA.determine_tactical_options("borda count")
+    TVA.determine_tactical_options(VotingScheme.borda_count)
     # print(f"{TVA.get_winners()=}")
     # for voting_scheme in VotingScheme:
     #     print(
