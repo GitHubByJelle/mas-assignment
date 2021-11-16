@@ -8,7 +8,9 @@ import numpy as np
 
 
 class TacticalVotingAnalyst:
-    def __init__(self, candidates: np.ndarray, candidate_names: tuple[str], voters: list[Voter]):
+    def __init__(
+        self, candidates: np.ndarray, candidate_names: tuple[str], voters: list[Voter]
+    ):
         """
         Initialisation
         :param candidates: ndarray of objects from class 'Candidate' np.ndarray[5, np.int_]
@@ -67,8 +69,11 @@ class TacticalVotingAnalyst:
             print("Voting Scheme - {}:".format(voting_scheme))
             sorting = (-counter).copy().argsort()
             for i in sorting:
-                print("{}: {}.".format(self.voting_situation.candidate_names[i],
-                                       counter[i]))
+                print(
+                    "{}: {}.".format(
+                        self.voting_situation.candidate_names[i], counter[i]
+                    )
+                )
 
             # i = 1
             # # Print sorted results (based on decreasing votes)
@@ -126,7 +131,9 @@ class TacticalVotingAnalyst:
 
         return happiness
 
-    def determine_tactical_options(self, voting_scheme: VotingScheme, happiness_scheme: HappinessScheme):
+    def determine_tactical_options(
+        self, voting_scheme: VotingScheme, happiness_scheme: HappinessScheme
+    ):
         """
          Determine the tactical voting options for all voters
          :param happiness_scheme: Happiness scheme to calculate happiness
@@ -176,9 +183,12 @@ class TacticalVotingAnalyst:
         :param outcome: Social outcome of votings (vector, where each value represents a candidate)
         :return: String with names added
         """
-        return ", ".join(np.core.defchararray.add(
-            np.core.defchararray.add(self.voting_situation.candidate_names, ": "),
-                                                  outcome.astype(np.int32).astype(str))[(-outcome).argsort()])
+        return ", ".join(
+            np.core.defchararray.add(
+                np.core.defchararray.add(self.voting_situation.candidate_names, ": "),
+                outcome.astype(np.int32).astype(str),
+            )[(-outcome).argsort()]
+        )
 
     def calculate_risk(self, tactical_options: list[tuple]) -> float:
 

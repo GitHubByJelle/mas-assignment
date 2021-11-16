@@ -8,6 +8,7 @@ class VotingScheme(IntEnum):
     borda_count = 2
     anti_plurality = 3
 
+
 # Can be used for plurality, vote for n, anti-plurality
 def create_vote_for_n_vector(n, num_candidates):
     vec = np.zeros(num_candidates)

@@ -41,30 +41,26 @@ class Voter:
         # Count happiness
         happiness = 0
         if happiness_scheme == HappinessScheme.borda_count:
-            borda = np.arange(len(ranked_candidates_id)-1, -1, -1)
+            borda = np.arange(len(ranked_candidates_id) - 1, -1, -1)
             for i, candidate in enumerate(self.true_preferences[0]):
                 happiness += (
                     borda[i]
-                    * borda[
-                        np.nonzero(ranked_candidates_id == candidate)[0][0]
-                    ]
+                    * borda[np.nonzero(ranked_candidates_id == candidate)[0][0]]
                 )
         if happiness_scheme == HappinessScheme.linear_weight:
             weights = np.arange(len(ranked_candidates_id), 0, -1)
             for i, candidate in enumerate(self.true_preferences[0]):
-                outcome_index = np.where(ranked_candidates_id == self.true_preferences[0][i])
-                happiness += (
-                        weights[i]
-                        * (i - outcome_index[0][0])
+                outcome_index = np.where(
+                    ranked_candidates_id == self.true_preferences[0][i]
                 )
+                happiness += weights[i] * (i - outcome_index[0][0])
         if happiness_scheme == HappinessScheme.squared_weight:
             weights = np.square(np.arange(len(ranked_candidates_id), 0, -1))
             for i, candidate in enumerate(self.true_preferences[0]):
-                outcome_index = np.where(ranked_candidates_id == self.true_preferences[0][i])
-                happiness += (
-                        weights[i]
-                        * (i - outcome_index[0][0])
+                outcome_index = np.where(
+                    ranked_candidates_id == self.true_preferences[0][i]
                 )
+                happiness += weights[i] * (i - outcome_index[0][0])
         return happiness
 
     def update_tactical_options(
@@ -154,8 +150,7 @@ class Voter:
         outcome += sorted_voting_scheme
         return outcome
 
-    def outcome_to_ranked_ids(self, outcome: np.ndarray)\
-            -> np.ndarray:
+    def outcome_to_ranked_ids(self, outcome: np.ndarray) -> np.ndarray:
         """
         Sort outcome (based on scores) to rank ids
         :param outcome: Social outcome based on voting scheme
