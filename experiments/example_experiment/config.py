@@ -1,13 +1,14 @@
 import numpy as np
 from tactical_voting_analyst.tactical_voting_analyst import TacticalVotingAnalyst
 from tactical_voting_analyst.voting_schemes import VotingScheme
+from tactical_voting_analyst.happiness_schemes import HappinessScheme
 
 CANDIDATES_NAMES = (
     "A",
     "B",
     "C",
     "D",
-) 
+)
 
 CANDIDATES = np.arange(
     len(CANDIDATES_NAMES)
@@ -28,6 +29,8 @@ PREFERENCES = np.array(
 TVA = TacticalVotingAnalyst
 
 VOTING_SCHEMES = [VotingScheme.borda_count,
-                    VotingScheme.plurality, 
-                    VotingScheme.vote_for_two, 
-                    VotingScheme.anti_plurality]
+                  VotingScheme.plurality,
+                  VotingScheme.vote_for_two,
+                  VotingScheme.anti_plurality]
+
+HAPPINESS_SCHEME = HappinessScheme.borda_count

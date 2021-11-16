@@ -40,6 +40,7 @@ def generate_experiment(argv: list[str]):
               for preference in preferences]
     TVA = variables['TVA'](candidates, candidates_names, voters)
     voting_schemes = variables['VOTING_SCHEMES']
+    happiness_scheme = variables['HAPPINESS_SCHEME']
 
     # Compute happiness and risk for every voting scheme in the experiment
     fig = plt.figure()
@@ -49,7 +50,8 @@ def generate_experiment(argv: list[str]):
 
     schemes_happiness_risk = []
     for vs in voting_schemes:
-        scheme_tactical_options = TVA.determine_tactical_options(vs)
+        scheme_tactical_options = TVA.determine_tactical_options(
+            vs, happiness_scheme)
         scheme_risk = TVA.calculate_risk(scheme_tactical_options)
         scheme_happiness = TVA.overall_happiness(vs)
         schemes_happiness_risk.append((scheme_happiness, scheme_risk))
