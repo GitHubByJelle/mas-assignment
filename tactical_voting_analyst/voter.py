@@ -56,7 +56,7 @@ class Voter:
             borda_preferences = borda[np.argsort(self.true_preferences[0])]
             borda_ranking = borda[np.argsort(ranked_candidates_id)]
             happiness = np.dot(borda_preferences, borda_ranking)
-            assert old_happiness == happiness
+            assert old_happiness == happiness, "not equal :("
 
         if happiness_scheme == HappinessScheme.linear_weight:
             weights = np.arange(len(ranked_candidates_id), 0, -1)
