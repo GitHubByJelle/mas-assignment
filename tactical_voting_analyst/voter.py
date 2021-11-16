@@ -78,11 +78,22 @@ class Voter:
 
         if happiness_scheme == HappinessScheme.squared_weight:
             weights = np.square(np.arange(len(ranked_candidates_id), 0, -1))
+            ## BEGIN OLD
+            old_happiness = 0
             for i, candidate in enumerate(self.true_preferences[0]):
                 outcome_index = np.where(
                     ranked_candidates_id == self.true_preferences[0][i]
                 )
-                happiness += weights[i] * (i - outcome_index[0][0])
+                old_happiness += weights[i] * (i - outcome_index[0][0])
+            ## END OLD
+            weights_preferences = weights[np.argsort(self.true_preferences[0])]
+            weights_ranking = (
+                np.arange(len(weights))
+                - weights[np.argsort(ranked_candidates_id)]
+            )
+            happiness = np.dot(weights_preferences, weights_ranking)
+            assert old_happiness == happiness, "not equal :("
+
         return happiness
 
     def update_tactical_options(
