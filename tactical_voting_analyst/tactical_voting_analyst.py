@@ -2,6 +2,7 @@ from .voting_situation import *
 from .voting_schemes import *
 from .voter import Voter
 from .voting_schemes import VotingScheme
+from .happiness_schemes import HappinessScheme
 import collections
 import numpy as np
 
@@ -125,9 +126,10 @@ class TacticalVotingAnalyst:
 
         return happiness
 
-    def determine_tactical_options(self, voting_scheme: VotingScheme):
+    def determine_tactical_options(self, voting_scheme: VotingScheme, happiness_scheme: HappinessScheme):
         """
          Determine the tactical voting options for all voters
+         :param happiness_scheme: Happiness scheme to calculate happiness
          :param voting_scheme: String of selected voting scheme
          :return: All tactical options
          """
@@ -147,6 +149,7 @@ class TacticalVotingAnalyst:
                 outcome,
                 self.voting_schemes[voting_scheme],
                 voting_scheme,
+                happiness_scheme,
             )
 
             # Save tactical options
