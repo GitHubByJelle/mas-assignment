@@ -191,10 +191,9 @@ class TacticalVotingAnalyst:
         )
 
     def calculate_risk(self, tactical_options: list[tuple]) -> float:
-
-        non_empty_options = 0
-        for voter_tactical_options in tactical_options:
-            if len(voter_tactical_options) != 0:
-                non_empty_options += 1
-
-        return non_empty_options / len(tactical_options)
+        return len(tuple(to for to in tactical_options if len(to) > 0))/len(tactical_options)
+        #non_empty_options = 0
+        #for voter_tactical_options in tactical_options:
+        #    if len(voter_tactical_options) != 0:
+        #        non_empty_options += 1
+        #return non_empty_options / len(tactical_options)

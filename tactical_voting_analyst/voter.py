@@ -43,56 +43,30 @@ class Voter:
         happiness = 0
         if happiness_scheme == HappinessScheme.borda_count:
             borda = np.arange(len(ranked_candidates_id) - 1, -1, -1)
-            ## OLD
-            old_happiness = 0
-            for i, candidate in enumerate(self.true_preferences[0]):
-                old_happiness += (
-                    borda[i]
-                    * borda[
-                        np.nonzero(ranked_candidates_id == candidate)[0][0]
-                    ]
-                )
-            ## END OLD
-            borda_preferences = borda[np.argsort(self.true_preferences[0])]
-            borda_ranking = borda[np.argsort(ranked_candidates_id)]
-            happiness = np.dot(borda_preferences, borda_ranking)
-            assert old_happiness == happiness, "not equal :("
+            # borda_ranking =
+            happiness = np.dot(
+                borda[np.argsort(self.true_preferences[0])],
+                borda[np.argsort(ranked_candidates_id)],
+            )
 
-        if happiness_scheme == HappinessScheme.linear_weight:
+        elif happiness_scheme == HappinessScheme.linear_weight:
             weights = np.arange(len(ranked_candidates_id), 0, -1)
-            ## BEGIN OLD
-            old_happiness = 0
-            for i, candidate in enumerate(self.true_preferences[0]):
-                outcome_index = np.where(
-                    ranked_candidates_id == self.true_preferences[0][i]
-                )
-                old_happiness += weights[i] * (i - outcome_index[0][0])
-            ## END OLD
-            weights_preferences = weights[np.argsort(self.true_preferences[0])]
             weights_ranking = (
                 np.arange(len(weights))
                 - weights[np.argsort(ranked_candidates_id)]
             )
-            happiness = np.dot(weights_preferences, weights_ranking)
-            assert old_happiness == happiness, "not equal :("
+            happiness = np.dot(
+                weights[np.argsort(self.true_preferences[0])], weights_ranking
+            )
 
-        if happiness_scheme == HappinessScheme.squared_weight:
+        elif happiness_scheme == HappinessScheme.squared_weight:
             weights = np.square(np.arange(len(ranked_candidates_id), 0, -1))
-            ## BEGIN OLD
-            old_happiness = 0
-            for i, candidate in enumerate(self.true_preferences[0]):
-                outcome_index = np.where(
-                    ranked_candidates_id == self.true_preferences[0][i]
-                )
-                old_happiness += weights[i] * (i - outcome_index[0][0])
-            ## END OLD
             weights_preferences = weights[np.argsort(self.true_preferences[0])]
             weights_ranking = (
                 np.arange(len(weights))
                 - weights[np.argsort(ranked_candidates_id)]
             )
             happiness = np.dot(weights_preferences, weights_ranking)
-            assert old_happiness == happiness, "not equal :("
 
         return happiness
 
@@ -104,11 +78,11 @@ class Voter:
         happiness_scheme: HappinessScheme = HappinessScheme.borda_count,
     ):
         """
-         Determine the tactical options for each votes
-         :param outcome: Outcome of the real preferences
-         :param voting_scheme_vector: vector of voting_scheme
-         :param voting_scheme: String of selected voting scheme
-         """
+        Determine the tactical options for each votes
+        :param outcome: Outcome of the real preferences
+        :param voting_scheme_vector: vector of voting_scheme
+        :param voting_scheme: String of selected voting scheme
+        """
         # Reset tactical preferences
         self.tactical_options = []
 
@@ -157,11 +131,11 @@ class Voter:
         voting_scheme_vector: np.ndarray,
     ) -> np.ndarray:
         """
-         Remove preference from outcome
-         :param outcome: Current outcome
-         :param preference: Preference to remove
-         :param voting_scheme_vector: List of voting_scheme
-         :return: Outcome after removing preference
+        Remove preference from outcome
+        :param outcome: Current outcome
+        :param preference: Preference to remove
+        :param voting_scheme_vector: List of voting_scheme
+        :return: Outcome after removing preference
         """
         outcome = outcome.copy()
         sorting_idxs = preference.argsort()[0]
@@ -176,11 +150,11 @@ class Voter:
         voting_scheme_vector: np.ndarray,
     ) -> np.ndarray:
         """
-         Remove preference from outcome
-         :param outcome: Current outcome
-         :param preference: Preference to remove
-         :param voting_scheme_vector: Lisrt of voting_scheme
-         :return: Outcome after removing preference
+        Remove preference from outcome
+        :param outcome: Current outcome
+        :param preference: Preference to remove
+        :param voting_scheme_vector: Lisrt of voting_scheme
+        :return: Outcome after removing preference
         """
         sorting_idxs = np.argsort(preference)
         sorted_voting_scheme = voting_scheme_vector[sorting_idxs]
