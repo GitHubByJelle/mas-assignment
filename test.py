@@ -1,7 +1,7 @@
-import numpy as np
-names = np.array(["A","B"])
-names1 = np.array([1,12])
+import itertools
 
-
-print()
+stuff = [1, 2, 3]
+for L in range(0, len(stuff)+1):
+    for subset in itertools.combinations(stuff, L):
+        print(subset)
 

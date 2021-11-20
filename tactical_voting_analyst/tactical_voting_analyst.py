@@ -1,3 +1,5 @@
+import itertools
+
 from .voting_situation import *
 from .voting_schemes import *
 from .voter import Voter
@@ -174,6 +176,172 @@ class TacticalVotingAnalyst:
                         )
                     )
             print()
+
+        return tactical_options
+
+
+    def determine_paired_tactical_options(
+        self, voting_scheme: VotingScheme, happiness_scheme: HappinessScheme, size_pairs: int = 2
+    ):
+        """
+         Determine the tactical voting options for all voters when looking in pairs
+         :param size_pairs: Size of the pairs in the coalition
+         :param happiness_scheme: Happiness scheme to calculate happiness
+         :param voting_scheme: String of selected voting scheme
+         :return: All tactical options for pairs
+         """
+        # Determine outcome
+        outcome = self.get_winner(self.voting_schemes[voting_scheme])
+
+        # Print current outcome
+        print("Current outcome: {}\n".format(self.create_outcome_str(outcome)))
+
+        # Create list for tactical options
+        tactical_options = []
+
+        # For every combination of voters (of the given size)
+        for comb in itertools.combinations(range(len(self.voting_situation.voters)), size_pairs):
+            # Create list for keeping track of all voters
+            sub_voters = []
+
+            # Get all voters
+            for voter_id in comb:
+                sub_voters.append(self.voting_situation.voters[voter_id])
+
+            # Get current happiness for all voters
+            curr_happiness = [voter.determine_happiness(
+                voter.outcome_to_ranked_ids(outcome),
+                voting_scheme,
+                happiness_scheme,
+            ) for voter in sub_voters]
+
+            # Determine outcome without this voters vote
+            first_voter = True
+            for voter in sub_voters:
+                if first_voter:
+                    blank_outcome = voter.remove_pref_outcome(
+                        outcome, voter.true_preferences, self.voting_schemes[voting_scheme],
+                        )
+                else:
+                    blank_outcome = voter.remove_pref_outcome(
+                    blank_outcome, voter.true_preferences,
+                    self.voting_schemes[voting_scheme],
+                    )
+
+            # For every permutation of preferences
+            for perm in itertools.permutations(np.arange(len(outcome))):
+                # Create an array
+                perm = np.array(perm)
+
+                # Determine new outcome by adding voters votes
+                first_voter = True
+                for voter in sub_voters:
+                    if first_voter:
+                        new_outcome = voter.add_pref_outcome(
+                            blank_outcome.copy(), perm, self.voting_schemes[voting_scheme],
+                            )
+                    else:
+                        new_outcome = voter.add_pref_outcome(
+                            new_outcome.copy(), perm, self.voting_schemes[voting_scheme],
+                            )
+
+                # Determine the new hapiness for all voters
+                new_happiness = [voter.determine_happiness(
+                    voter.outcome_to_ranked_ids(new_outcome),
+                    voting_scheme,
+                    happiness_scheme,
+                ) for voter in sub_voters]
+
+                # If happiness is better for ALL voters in the coalition, add
+                if (np.array([new_happiness[i] > curr_happiness[i] for i in range(size_pairs)]).all()):
+                    for j in range(size_pairs):
+                        if j == 0:
+                            tactical_option = [(comb[j], perm, curr_happiness[j], new_happiness[j], new_outcome)]
+                        else:
+                            tactical_option.append((comb[j], perm, curr_happiness[j], new_happiness[j], new_outcome))
+
+                    tactical_options.append(tuple(tactical_option))
+
+
+        ## OLD CODE
+        # # For every voter that is in our situation
+        # for i in range(len(self.voting_situation.voters) - 1):
+        #     # Get voter
+        #     voter_one = self.voting_situation.voters[i]
+        #
+        #     # Determine current happiness
+        #     curr_happiness_one = voter_one.determine_happiness(
+        #         voter_one.outcome_to_ranked_ids(outcome),
+        #         voting_scheme,
+        #         happiness_scheme,
+        #     )
+        #     # Determine outcome without this voter vote
+        #     blank_outcome_one = voter_one.remove_pref_outcome(
+        #         outcome, voter_one.true_preferences, self.voting_schemes[voting_scheme],
+        #         )
+        #     # For every voter, voter one could co-op with
+        #     for j in range(i+1, len(self.voting_situation.voters)):
+        #         # Get voter
+        #         voter_two = self.voting_situation.voters[j]
+        #
+        #         # Determine current happiness
+        #         curr_happiness_two = voter_two.determine_happiness(
+        #             voter_two.outcome_to_ranked_ids(outcome),
+        #             voting_scheme,
+        #             happiness_scheme,
+        #             )
+        #
+        #         # Determine outcome without the votes of BOTH voters
+        #         blank_outcome = self.voting_situation.voters[j].remove_pref_outcome(
+        #             blank_outcome_one, self.voting_situation.voters[j].true_preferences,
+        #             self.voting_schemes[voting_scheme],
+        #             )
+        #
+        #         # For every permutation of preferences
+        #         for perm in itertools.permutations(np.arange(len(outcome))):
+        #             # Create an array
+        #             perm = np.array(perm)
+        #
+        #             # Determine new outcome by adding voters votes
+        #             # Voter two
+        #             new_outcome = voter_two.add_pref_outcome(
+        #                 # Voter one
+        #                 voter_one.add_pref_outcome(
+        #                     blank_outcome.copy(), perm, self.voting_schemes[voting_scheme],
+        #                     ),
+        #                 perm,
+        #                 self.voting_schemes[voting_scheme],
+        #             )
+        #
+        #             # Calculate new happiness for both voters
+        #             new_happiness_one = voter_one.determine_happiness(
+        #                 voter_one.outcome_to_ranked_ids(new_outcome),
+        #                 voting_scheme,
+        #                 happiness_scheme,
+        #             )
+        #
+        #             new_happiness_two = voter_two.determine_happiness(
+        #                 voter_two.outcome_to_ranked_ids(new_outcome),
+        #                 voting_scheme,
+        #                 happiness_scheme,
+        #             )
+        #
+        #             # If it's a better happiness (for BOTH voters), save
+        #             if new_happiness_one > curr_happiness_one and new_happiness_two > curr_happiness_two:
+        #                 tactical_options.append(((i, perm, curr_happiness_one, new_happiness_one, new_outcome),
+        #                                          (j, perm, curr_happiness_two, new_happiness_two, new_outcome)))
+
+        # Print outcome
+        for pref in tactical_options:
+            print(
+                "Voters: {}, Happiness: ({}) -> ({}), tactical preference: {}, new outcome: {}".format(
+                    " & ".join([str(x[0]) for x in pref]),
+                    ", ".join([str(x[2]) for x in pref]),
+                    ", ".join([str(x[3]) for x in pref]),
+                    " > ".join(self.voting_situation.candidate_names[pref[0][1]]),
+                    self.create_outcome_str(pref[0][4]),
+                )
+            )
 
         return tactical_options
 
