@@ -285,6 +285,16 @@ class TacticalVotingAnalyst:
                         for i in range(size_pairs)
                     ]
                 ).all():
+                    tactical_option_new = tuple(
+                        (
+                            comb[i],
+                            perm,
+                            curr_happiness[i],
+                            new_happiness[i],
+                            new_outcome,
+                        )
+                        for i in range(size_pairs)
+                    )
                     tactical_option = [
                         (
                             comb[0],
