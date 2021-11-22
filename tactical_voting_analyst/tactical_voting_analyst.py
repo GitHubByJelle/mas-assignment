@@ -277,7 +277,6 @@ class TacticalVotingAnalyst:
                     )
                     for voter in sub_voters
                 )
-
                 # If happiness is better for ALL voters in the coalition, add
                 if np.array(
                     [
@@ -285,7 +284,7 @@ class TacticalVotingAnalyst:
                         for i in range(size_pairs)
                     ]
                 ).all():
-                    tactical_option_new = tuple(
+                    tactical_option = tuple(
                         (
                             comb[i],
                             perm,
@@ -295,6 +294,7 @@ class TacticalVotingAnalyst:
                         )
                         for i in range(size_pairs)
                     )
+                    """
                     tactical_option = [
                         (
                             comb[0],
@@ -314,8 +314,9 @@ class TacticalVotingAnalyst:
                                 new_outcome,
                             )
                         )
-
-                    tactical_options.append(tuple(tactical_option))
+                    ipdb.set_trace()
+                    """
+                    tactical_options.append(tactical_option)
 
         ## OLD CODE
         # # For every voter that is in our situation
