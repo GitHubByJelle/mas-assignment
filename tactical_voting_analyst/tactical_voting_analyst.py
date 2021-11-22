@@ -294,28 +294,6 @@ class TacticalVotingAnalyst:
                         )
                         for i in range(size_pairs)
                     )
-                    """
-                    tactical_option = [
-                        (
-                            comb[0],
-                            perm,
-                            curr_happiness[0],
-                            new_happiness[0],
-                            new_outcome,
-                        )
-                    ]
-                    for j in range(1, size_pairs):
-                        tactical_option.append(
-                            (
-                                comb[j],
-                                perm,
-                                curr_happiness[j],
-                                new_happiness[j],
-                                new_outcome,
-                            )
-                        )
-                    ipdb.set_trace()
-                    """
                     tactical_options.append(tactical_option)
 
         ## OLD CODE
