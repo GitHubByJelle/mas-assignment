@@ -2,7 +2,7 @@ import numpy as np
 
 
 class VotingSituation:
-    def __init__(self, candidates, candidate_names: tuple[str], voters):
+    def __init__(self, candidates, candidate_names: tuple[str, ...], voters):
         """
         Class to store the voting situation
         :param candidates: list of objects from class 'Candidate'

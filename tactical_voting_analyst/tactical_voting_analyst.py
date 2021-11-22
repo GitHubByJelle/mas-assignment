@@ -7,18 +7,24 @@ from .voting_schemes import VotingScheme
 from .happiness_schemes import HappinessScheme
 import collections
 import numpy as np
+import ipdb
 
 
 class TacticalVotingAnalyst:
     def __init__(
-        self, candidates: np.ndarray, candidate_names: tuple[str], voters: list[Voter]
+        self,
+        candidates: np.ndarray,
+        candidate_names: tuple[str, ...],
+        voters: list[Voter],
     ):
         """
         Initialisation
         :param candidates: ndarray of objects from class 'Candidate' np.ndarray[5, np.int_]
         :param voters: list[Voter]
         """
-        self.voting_situation = VotingSituation(candidates, candidate_names, voters)
+        self.voting_situation = VotingSituation(
+            candidates, candidate_names, voters
+        )
         self.voting_schemes = self.create_voting_vectors(len(candidates))
 
     def create_voting_vectors(self, num_candidates: int) -> np.ndarray:
@@ -28,8 +34,12 @@ class TacticalVotingAnalyst:
         :return: Dictionary with vectors for several voting schemes
         """
         named_voting_vectors = {
-            VotingScheme.plurality: create_vote_for_n_vector(1, num_candidates),
-            VotingScheme.vote_for_two: create_vote_for_n_vector(2, num_candidates),
+            VotingScheme.plurality: create_vote_for_n_vector(
+                1, num_candidates
+            ),
+            VotingScheme.vote_for_two: create_vote_for_n_vector(
+                2, num_candidates
+            ),
             VotingScheme.borda_count: create_borda_count(num_candidates),
             VotingScheme.anti_plurality: create_vote_for_n_vector(
                 num_candidates - 1, num_candidates
@@ -43,7 +53,9 @@ class TacticalVotingAnalyst:
         )
 
     # def get_winner(self, voting_scheme: str, print_winner = False) ->
-    def get_winner(self, voting_scheme: np.ndarray, print_winner=False) -> np.ndarray:
+    def get_winner(
+        self, voting_scheme: np.ndarray, print_winner=False
+    ) -> np.ndarray:
         """
         Determine the total number of votes per candidate according to a specific voting scheme
         :param voting_scheme: voting scheme ndarray
@@ -137,16 +149,18 @@ class TacticalVotingAnalyst:
         self, voting_scheme: VotingScheme, happiness_scheme: HappinessScheme
     ):
         """
-         Determine the tactical voting options for all voters
-         :param happiness_scheme: Happiness scheme to calculate happiness
-         :param voting_scheme: String of selected voting scheme
-         :return: All tactical options
-         """
+        Determine the tactical voting options for all voters
+        :param happiness_scheme: Happiness scheme to calculate happiness
+        :param voting_scheme: String of selected voting scheme
+        :return: All tactical options
+        """
         # Determine outcome
         outcome = self.get_winner(self.voting_schemes[voting_scheme])
 
         # Print current outcome
-        print("Current outcome: {}\n".format(self.create_outcome_str(outcome)))
+        print(
+            "Current outcome: {}\n".format(self.__create_outcome_str(outcome))
+        )
 
         # Create list for tactical options
         tactical_options = []
@@ -171,62 +185,71 @@ class TacticalVotingAnalyst:
                         "Happiness: {} -> {}, tactical preference: {}, new outcome: {}".format(
                             pref[1],
                             pref[2],
-                            " > ".join(self.voting_situation.candidate_names[pref[0]]),
-                            self.create_outcome_str(pref[3]),
+                            " > ".join(
+                                self.voting_situation.candidate_names[pref[0]]
+                            ),
+                            self.__create_outcome_str(pref[3]),
                         )
                     )
             print()
 
         return tactical_options
 
-
     def determine_paired_tactical_options(
-        self, voting_scheme: VotingScheme, happiness_scheme: HappinessScheme, size_pairs: int = 2
+        self,
+        voting_scheme: VotingScheme,
+        happiness_scheme: HappinessScheme,
+        size_pairs: int = 2,
     ):
         """
-         Determine the tactical voting options for all voters when looking in pairs
-         :param size_pairs: Size of the pairs in the coalition
-         :param happiness_scheme: Happiness scheme to calculate happiness
-         :param voting_scheme: String of selected voting scheme
-         :return: All tactical options for pairs
-         """
+        Determine the tactical voting options for all voters when looking in pairs
+        :param size_pairs: Size of the pairs in the coalition
+        :param happiness_scheme: Happiness scheme to calculate happiness
+        :param voting_scheme: String of selected voting scheme
+        :return: All tactical options for pairs
+        """
         # Determine outcome
         outcome = self.get_winner(self.voting_schemes[voting_scheme])
 
         # Print current outcome
-        print("Current outcome: {}\n".format(self.create_outcome_str(outcome)))
+        print(
+            "Current outcome: {}\n".format(self.__create_outcome_str(outcome))
+        )
 
         # Create list for tactical options
         tactical_options = []
 
         # For every combination of voters (of the given size)
-        for comb in itertools.combinations(range(len(self.voting_situation.voters)), size_pairs):
-            # Create list for keeping track of all voters
-            sub_voters = []
-
-            # Get all voters
-            for voter_id in comb:
-                sub_voters.append(self.voting_situation.voters[voter_id])
+        for comb in itertools.combinations(
+            range(len(self.voting_situation.voters)), size_pairs
+        ):
+            # Create tuple for keeping track of all voters
+            sub_voters = tuple(
+                self.voting_situation.voters[voter_id] for voter_id in comb
+            )
 
             # Get current happiness for all voters
-            curr_happiness = [voter.determine_happiness(
-                voter.outcome_to_ranked_ids(outcome),
-                voting_scheme,
-                happiness_scheme,
-            ) for voter in sub_voters]
+            curr_happiness = tuple(
+                voter.determine_happiness(
+                    voter.outcome_to_ranked_ids(outcome),
+                    voting_scheme,
+                    happiness_scheme,
+                )
+                for voter in sub_voters
+            )
 
             # Determine outcome without this voters vote
-            first_voter = True
-            for voter in sub_voters:
-                if first_voter:
-                    blank_outcome = voter.remove_pref_outcome(
-                        outcome, voter.true_preferences, self.voting_schemes[voting_scheme],
-                        )
-                else:
-                    blank_outcome = voter.remove_pref_outcome(
-                    blank_outcome, voter.true_preferences,
+            blank_outcome = sub_voters[0].remove_pref_outcome(
+                outcome,
+                sub_voters[0].true_preferences,
+                self.voting_schemes[voting_scheme],
+            )
+            for voter in sub_voters[1:]:
+                blank_outcome = voter.remove_pref_outcome(
+                    blank_outcome,
+                    voter.true_preferences,
                     self.voting_schemes[voting_scheme],
-                    )
+                )
 
             # For every permutation of preferences
             for perm in itertools.permutations(np.arange(len(outcome))):
@@ -234,34 +257,55 @@ class TacticalVotingAnalyst:
                 perm = np.array(perm)
 
                 # Determine new outcome by adding voters votes
-                first_voter = True
-                for voter in sub_voters:
-                    if first_voter:
-                        new_outcome = voter.add_pref_outcome(
-                            blank_outcome.copy(), perm, self.voting_schemes[voting_scheme],
-                            )
-                    else:
-                        new_outcome = voter.add_pref_outcome(
-                            new_outcome.copy(), perm, self.voting_schemes[voting_scheme],
-                            )
-
+                new_outcome = sub_voters[0].add_pref_outcome(
+                    blank_outcome.copy(),
+                    perm,
+                    self.voting_schemes[voting_scheme],
+                )
+                for voter in sub_voters[1:]:
+                    new_outcome = voter.add_pref_outcome(
+                        new_outcome.copy(),
+                        perm,
+                        self.voting_schemes[voting_scheme],
+                    )
                 # Determine the new hapiness for all voters
-                new_happiness = [voter.determine_happiness(
-                    voter.outcome_to_ranked_ids(new_outcome),
-                    voting_scheme,
-                    happiness_scheme,
-                ) for voter in sub_voters]
+                new_happiness = tuple(
+                    voter.determine_happiness(
+                        voter.outcome_to_ranked_ids(new_outcome),
+                        voting_scheme,
+                        happiness_scheme,
+                    )
+                    for voter in sub_voters
+                )
 
                 # If happiness is better for ALL voters in the coalition, add
-                if (np.array([new_happiness[i] > curr_happiness[i] for i in range(size_pairs)]).all()):
-                    for j in range(size_pairs):
-                        if j == 0:
-                            tactical_option = [(comb[j], perm, curr_happiness[j], new_happiness[j], new_outcome)]
-                        else:
-                            tactical_option.append((comb[j], perm, curr_happiness[j], new_happiness[j], new_outcome))
+                if np.array(
+                    [
+                        new_happiness[i] > curr_happiness[i]
+                        for i in range(size_pairs)
+                    ]
+                ).all():
+                    tactical_option = [
+                        (
+                            comb[0],
+                            perm,
+                            curr_happiness[0],
+                            new_happiness[0],
+                            new_outcome,
+                        )
+                    ]
+                    for j in range(1, size_pairs):
+                        tactical_option.append(
+                            (
+                                comb[j],
+                                perm,
+                                curr_happiness[j],
+                                new_happiness[j],
+                                new_outcome,
+                            )
+                        )
 
                     tactical_options.append(tuple(tactical_option))
-
 
         ## OLD CODE
         # # For every voter that is in our situation
@@ -338,14 +382,16 @@ class TacticalVotingAnalyst:
                     " & ".join([str(x[0]) for x in pref]),
                     ", ".join([str(x[2]) for x in pref]),
                     ", ".join([str(x[3]) for x in pref]),
-                    " > ".join(self.voting_situation.candidate_names[pref[0][1]]),
-                    self.create_outcome_str(pref[0][4]),
+                    " > ".join(
+                        self.voting_situation.candidate_names[pref[0][1]]
+                    ),
+                    self.__create_outcome_str(pref[0][4]),
                 )
             )
 
         return tactical_options
 
-    def create_outcome_str(self, outcome: np.ndarray) -> str:
+    def __create_outcome_str(self, outcome: np.ndarray) -> str:
         """
         Creates a string as output for a given outcome (adding candidate names)
         :param outcome: Social outcome of votings (vector, where each value represents a candidate)
@@ -353,15 +399,19 @@ class TacticalVotingAnalyst:
         """
         return ", ".join(
             np.core.defchararray.add(
-                np.core.defchararray.add(self.voting_situation.candidate_names, ": "),
+                np.core.defchararray.add(
+                    self.voting_situation.candidate_names, ": "
+                ),
                 outcome.astype(np.int32).astype(str),
             )[(-outcome).argsort()]
         )
 
     def calculate_risk(self, tactical_options: list[tuple]) -> float:
-        return len(tuple(to for to in tactical_options if len(to) > 0))/len(tactical_options)
-        #non_empty_options = 0
-        #for voter_tactical_options in tactical_options:
+        return len(tuple(to for to in tactical_options if len(to) > 0)) / len(
+            tactical_options
+        )
+        # non_empty_options = 0
+        # for voter_tactical_options in tactical_options:
         #    if len(voter_tactical_options) != 0:
         #        non_empty_options += 1
-        #return non_empty_options / len(tactical_options)
+        # return non_empty_options / len(tactical_options)

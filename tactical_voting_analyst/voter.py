@@ -44,8 +44,13 @@ class Voter:
             borda_weights = np.arange(len(ranked_candidates_id) - 1, -1, -1)
             argsorting = np.arange(len(ranked_candidates_id))
             argsorting[ranked_candidates_id] = argsorting.copy()
-            indices = argsorting[true_preferences]
-            happiness = np.dot(borda_weights, borda_weights[indices])
+            # the above argsorting is computed using counting sort, a sorting method that has linear time complexity, thus better than np.argsort, but effectively it does the same
+            indices = argsorting[
+                true_preferences
+            ]  # we compose the indices to get "the position of each candidate n ranked_candidates_id in true_preferences"
+            happiness = np.dot(
+                borda_weights, borda_weights[indices]
+            )  # multiply elementwise ans sum everything up
 
         elif happiness_scheme == HappinessScheme.linear_weight:
             linear_weights = np.arange(len(ranked_candidates_id), 0, -1)
@@ -57,9 +62,7 @@ class Voter:
             )
 
         elif happiness_scheme == HappinessScheme.squared_weight:
-            squared_weights = np.square(
-                np.arange(len(ranked_candidates_id), 0, -1)
-            )
+            squared_weights = np.square(np.arange(len(ranked_candidates_id), 0, -1))
             argsorting = np.arange(len(ranked_candidates_id))
             argsorting[ranked_candidates_id] = argsorting.copy()
             indices = argsorting[true_preferences]
@@ -94,7 +97,9 @@ class Voter:
 
         # Determine outcome without voter
         blank_outcome = self.remove_pref_outcome(
-            outcome, self.true_preferences, voting_scheme_vector,
+            outcome,
+            self.true_preferences,
+            voting_scheme_vector,
         )
 
         # For every permutation of preferences
