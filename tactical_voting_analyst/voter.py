@@ -48,19 +48,24 @@ class Voter:
             happiness = np.dot(borda_weights, borda_weights[indices])
 
         elif happiness_scheme == HappinessScheme.linear_weight:
-            weights = np.arange(len(ranked_candidates_id), 0, -1)
+            linear_weights = np.arange(len(ranked_candidates_id), 0, -1)
             argsorting = np.arange(len(ranked_candidates_id))
             argsorting[ranked_candidates_id] = argsorting.copy()
             indices = argsorting[true_preferences]
-            happiness = np.dot(weights, np.arange(len(true_preferences)) - indices)
-
+            happiness = np.dot(
+                linear_weights, np.arange(len(true_preferences)) - indices
+            )
 
         elif happiness_scheme == HappinessScheme.squared_weight:
-            weights = np.square(np.arange(len(ranked_candidates_id), 0, -1))
+            squared_weights = np.square(
+                np.arange(len(ranked_candidates_id), 0, -1)
+            )
             argsorting = np.arange(len(ranked_candidates_id))
             argsorting[ranked_candidates_id] = argsorting.copy()
             indices = argsorting[true_preferences]
-            happiness = np.dot(weights, np.arange(len(true_preferences)) - indices)
+            happiness = np.dot(
+                squared_weights, np.arange(len(true_preferences)) - indices
+            )
 
         return happiness
 
@@ -89,9 +94,7 @@ class Voter:
 
         # Determine outcome without voter
         blank_outcome = self.remove_pref_outcome(
-            outcome,
-            self.true_preferences,
-            voting_scheme_vector,
+            outcome, self.true_preferences, voting_scheme_vector,
         )
 
         # For every permutation of preferences
