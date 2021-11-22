@@ -25,7 +25,6 @@ class Voter:
         # self._true_preferences_array =
         self.tactical_preferences = preferences
 
-    # Functions that could be created
     def determine_happiness(
         self,
         ranked_candidates_id: np.ndarray,
@@ -38,35 +37,30 @@ class Voter:
         :param ranked_candidates_id: ranked ndarray of 1 dimension
         ranked_candidates_id[1] = 3 means that candidate with id=3 ranked second in the final outcome
         """
-
+        true_preferences = self.true_preferences[0]
         # Count happiness
         happiness = 0
         if happiness_scheme == HappinessScheme.borda_count:
-            borda = np.arange(len(ranked_candidates_id) - 1, -1, -1)
-            # borda_ranking =
-            happiness = np.dot(
-                borda[np.argsort(self.true_preferences[0])],
-                borda[np.argsort(ranked_candidates_id)],
-            )
+            borda_weights = np.arange(len(ranked_candidates_id) - 1, -1, -1)
+            argsorting = np.arange(len(ranked_candidates_id))
+            argsorting[ranked_candidates_id] = argsorting.copy()
+            indices = argsorting[true_preferences]
+            happiness = np.dot(borda_weights, borda_weights[indices])
 
         elif happiness_scheme == HappinessScheme.linear_weight:
             weights = np.arange(len(ranked_candidates_id), 0, -1)
-            weights_ranking = (
-                np.arange(len(weights))
-                - weights[np.argsort(ranked_candidates_id)]
-            )
-            happiness = np.dot(
-                weights[np.argsort(self.true_preferences[0])], weights_ranking
-            )
+            argsorting = np.arange(len(ranked_candidates_id))
+            argsorting[ranked_candidates_id] = argsorting.copy()
+            indices = argsorting[true_preferences]
+            happiness = np.dot(weights, np.arange(len(true_preferences)) - indices)
+
 
         elif happiness_scheme == HappinessScheme.squared_weight:
             weights = np.square(np.arange(len(ranked_candidates_id), 0, -1))
-            weights_preferences = weights[np.argsort(self.true_preferences[0])]
-            weights_ranking = (
-                np.arange(len(weights))
-                - weights[np.argsort(ranked_candidates_id)]
-            )
-            happiness = np.dot(weights_preferences, weights_ranking)
+            argsorting = np.arange(len(ranked_candidates_id))
+            argsorting[ranked_candidates_id] = argsorting.copy()
+            indices = argsorting[true_preferences]
+            happiness = np.dot(weights, np.arange(len(true_preferences)) - indices)
 
         return happiness
 
@@ -95,7 +89,9 @@ class Voter:
 
         # Determine outcome without voter
         blank_outcome = self.remove_pref_outcome(
-            outcome, self.true_preferences, voting_scheme_vector,
+            outcome,
+            self.true_preferences,
+            voting_scheme_vector,
         )
 
         # For every permutation of preferences
