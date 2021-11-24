@@ -2,6 +2,7 @@ import numpy as np
 from tactical_voting_analyst.tactical_voting_analyst import TacticalVotingAnalyst
 from tactical_voting_analyst.voting_schemes import VotingScheme
 from tactical_voting_analyst.happiness_schemes import HappinessScheme
+from experiment import ExperimentType
 
 CANDIDATES_NAMES = (
     "A",
@@ -34,3 +35,5 @@ VOTING_SCHEMES = [VotingScheme.borda_count,
                   VotingScheme.anti_plurality]
 
 HAPPINESS_SCHEME = HappinessScheme.borda_count
+
+EXPERIMENT_TYPE = ExperimentType.SIMPLE
