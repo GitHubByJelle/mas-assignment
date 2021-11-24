@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class VotingSituation:
+class VotingSituation: # TODO: do we really need this class?
     def __init__(self, candidates, candidate_names: tuple[str, ...], voters):
         """
         Class to store the voting situation
