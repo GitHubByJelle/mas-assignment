@@ -85,7 +85,40 @@ class Experiment:
         plt.savefig(self.exp_path + '/results.png')
 
     def run_voters_experiment(self):
-        pass
+        ax = self.create_ax()
+        schemes_happiness_risk = {}
+        for i, voters in enumerate(self.preferences):
+            self.voters = [Voter(np.expand_dims(preference, 0))
+                           for preference in self.preferences[i]]
+            self.tva = self.TVA(
+                self.candidates, self.candidates_names, self.voters)
+            for vs in self.voting_schemes:
+                vs_string = str(vs.__repr__())[14:].split(':')[0]
+                scheme_risk, scheme_happiness = self.get_risk_and_happiness(vs)
+                if vs_string not in schemes_happiness_risk:
+                    schemes_happiness_risk[vs_string] = []
+                else:
+                    schemes_happiness_risk[vs_string].append(
+                        ((scheme_happiness, scheme_risk), f'{vs_string}_{voters.shape[0]}'))
+
+        all_x_points = []
+        all_y_points = []
+        all_annots = []
+        for vs in schemes_happiness_risk:
+            print(vs, schemes_happiness_risk[vs])
+            ys, xs = list(zip(*[vs_n[0]
+                                for vs_n in schemes_happiness_risk[vs]]))
+            all_x_points += xs
+            all_y_points += ys
+            annots = [vs_n[1] for vs_n in schemes_happiness_risk[vs]]
+            all_annots += annots
+            ax.scatter(xs, ys, label=vs, alpha=0.7)
+
+        for i, txt in enumerate(all_annots):
+            ax.annotate(txt, (all_x_points[i], all_y_points[i]))
+
+        self.format_ax(ax)
+        plt.savefig(self.exp_path + '/results.png')
 
     def get_risk_and_happiness(self, vs):
         scheme_tactical_options = self.tva.determine_tactical_options(
