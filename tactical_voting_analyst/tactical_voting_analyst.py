@@ -10,24 +10,35 @@ import numpy as np
 import ipdb
 
 
+class Logger:
+    def __init__(self, verbose: bool):
+        self.verbose = verbose
+
+    def __call__(self, *msg):
+        if self.verbose:
+            print(*msg)
+
+
 class TacticalVotingAnalyst:
     def __init__(
         self,
         candidates: np.ndarray,
         candidate_names: tuple[str, ...],
         voters: list[Voter],
+        verbose=True,
     ):
         """
         Initialisation
         :param candidates: ndarray of objects from class 'Candidate' np.ndarray[5, np.int_]
         :param voters: list[Voter]
         """
+        self.print = Logger(verbose)
         self.voting_situation = VotingSituation(
             candidates, candidate_names, voters
         )
-        self.voting_schemes = self.create_voting_vectors(len(candidates))
+        self.voting_schemes = self.__create_voting_vectors(len(candidates))
 
-    def create_voting_vectors(self, num_candidates: int) -> np.ndarray:
+    def __create_voting_vectors(self, num_candidates: int) -> np.ndarray:
         """
         Create vectors for different voting schemes
         :param num_candidates: Number of candidates
@@ -53,9 +64,7 @@ class TacticalVotingAnalyst:
         )
 
     # def get_winner(self, voting_scheme: str, print_winner = False) ->
-    def get_winner(
-        self, voting_scheme: np.ndarray, print_winner=False
-    ) -> np.ndarray:
+    def get_winner(self, voting_scheme: np.ndarray) -> np.ndarray:
         """
         Determine the total number of votes per candidate according to a specific voting scheme
         :param voting_scheme: voting scheme ndarray
@@ -78,12 +87,12 @@ class TacticalVotingAnalyst:
 
         # If the user wants to print results
         # Todo: numpy-ize code bellow: DONE
-        if print_winner:
+        if self.print.verbose:
             # Print voting scheme
-            print("Voting Scheme - {}:".format(voting_scheme))
+            self.print("Voting Scheme - {}:".format(voting_scheme))
             sorting = (-counter).copy().argsort()
             for i in sorting:
-                print(
+                self.print(
                     "{}: {}.".format(
                         self.voting_situation.candidate_names[i], counter[i]
                     )
@@ -94,7 +103,7 @@ class TacticalVotingAnalyst:
             # for k, v in sorted(counter.items(), key=lambda x: x[1], reverse=True):
             #     print("{}) {}: {}".format(i, k, v))
             #     i += 1
-            print()
+            self.print()
 
         return counter
 
@@ -148,7 +157,7 @@ class TacticalVotingAnalyst:
         outcome = self.get_winner(self.voting_schemes[voting_scheme])
 
         # Print current outcome
-        print(
+        self.print(
             "Current outcome: {}\n".format(self.__create_outcome_str(outcome))
         )
 
@@ -167,21 +176,23 @@ class TacticalVotingAnalyst:
 
             # Save tactical options
             tactical_options.append(voter.tactical_options)
-
-            print("Voter {}".format(voter.voter_id))
-            if len(voter.tactical_options) > 0:
-                for pref in voter.tactical_options:
-                    print(
-                        "Happiness: {} -> {}, tactical preference: {}, new outcome: {}".format(
-                            pref[1],
-                            pref[2],
-                            " > ".join(
-                                self.voting_situation.candidate_names[pref[0]]
-                            ),
-                            self.__create_outcome_str(pref[3]),
+            if self.print.verbose:
+                print("Voter {}".format(voter.voter_id))
+                if len(voter.tactical_options) > 0:
+                    for pref in voter.tactical_options:
+                        print(
+                            "Happiness: {} -> {}, tactical preference: {}, new outcome: {}".format(
+                                pref[1],
+                                pref[2],
+                                " > ".join(
+                                    self.voting_situation.candidate_names[
+                                        pref[0]
+                                    ]
+                                ),
+                                self.__create_outcome_str(pref[3]),
+                            )
                         )
-                    )
-            print()
+                print()
 
         return tactical_options
 
@@ -202,7 +213,7 @@ class TacticalVotingAnalyst:
         outcome = self.get_winner(self.voting_schemes[voting_scheme])
 
         # Print current outcome
-        print(
+        self.print(
             "Current outcome: {}\n".format(self.__create_outcome_str(outcome))
         )
 
@@ -353,20 +364,20 @@ class TacticalVotingAnalyst:
         #             if new_happiness_one > curr_happiness_one and new_happiness_two > curr_happiness_two:
         #                 tactical_options.append(((i, perm, curr_happiness_one, new_happiness_one, new_outcome),
         #                                          (j, perm, curr_happiness_two, new_happiness_two, new_outcome)))
-
-        # Print outcome
-        for pref in tactical_options:
-            print(
-                "Voters: {}, Happiness: ({}) -> ({}), tactical preference: {}, new outcome: {}".format(
-                    " & ".join([str(x[0]) for x in pref]),
-                    ", ".join([str(x[2]) for x in pref]),
-                    ", ".join([str(x[3]) for x in pref]),
-                    " > ".join(
-                        self.voting_situation.candidate_names[pref[0][1]]
-                    ),
-                    self.__create_outcome_str(pref[0][4]),
+        if self.print.verbose:
+            # Print outcome
+            for pref in tactical_options:
+                print(
+                    "Voters: {}, Happiness: ({}) -> ({}), tactical preference: {}, new outcome: {}".format(
+                        " & ".join([str(x[0]) for x in pref]),
+                        ", ".join([str(x[2]) for x in pref]),
+                        ", ".join([str(x[3]) for x in pref]),
+                        " > ".join(
+                            self.voting_situation.candidate_names[pref[0][1]]
+                        ),
+                        self.__create_outcome_str(pref[0][4]),
+                    )
                 )
-            )
 
         return tactical_options
 
