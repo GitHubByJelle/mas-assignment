@@ -115,17 +115,6 @@ class TacticalVotingAnalyst:
         # Return the ranked_candidates
         return winners
 
-    def create_count_dict(self):
-        """
-        Create a dictionary for every candidate with value 0 (for counting)
-        :return: A dictionary for every candidate with value 0 (for counting)
-        """
-        # ToDo: do we need this function? This could be replaced by a np.zeros(len(candidates))
-        counter = {}
-        for candidate in self.voting_situation.candidates:
-            counter[candidate.name] = 0
-        return counter
-
     def overall_happiness(self, voting_scheme: VotingScheme):
         return self.__overall_happiness(self.voting_schemes[voting_scheme])
 
@@ -139,14 +128,15 @@ class TacticalVotingAnalyst:
         # ranked_candidates_id = np.argsort(-self.get_winner(voting_scheme))
         ranked_candidates_id = np.argsort(-self.get_winner(voting_scheme))
 
-        happiness = 0
-        for voter in self.voting_situation.voters:
-            happiness += voter.determine_happiness(ranked_candidates_id)
-
-        return happiness
+        return sum(  # TODO (by Giulio): consider using average rather than sum
+            voter.determine_happiness(ranked_candidates_id)
+            for voter in self.voting_situation.voters
+        )
 
     def determine_tactical_options(
-        self, voting_scheme: VotingScheme, happiness_scheme: HappinessScheme
+        self,
+        voting_scheme: VotingScheme,
+        happiness_scheme: HappinessScheme,
     ):
         """
         Determine the tactical voting options for all voters
