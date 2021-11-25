@@ -20,14 +20,14 @@ def main():
         len(candidates_names)
     )  # assign integer to each candidate, so we can use numpy
     preferences = [
-            (0, 1, 2, 3),
-            (1, 2, 3, 0),
-            (2, 3, 0, 1),
-            (0, 1, 2, 3),
-            (1, 2, 3, 0),
-            (2, 3, 0, 1),
-            (0, 1, 2, 3),
-        ]
+        (0, 1, 2, 3),
+        (1, 2, 3, 0),
+        (2, 3, 0, 1),
+        (0, 1, 2, 3),
+        (1, 2, 3, 0),
+        (2, 3, 0, 1),
+        (0, 1, 2, 3),
+    ]
     # Create TVA
     TVA = TacticalVotingAnalyst(candidates, candidates_names, preferences)
 

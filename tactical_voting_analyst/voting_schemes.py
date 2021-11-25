@@ -18,6 +18,4 @@ def create_vote_for_n_vector(n: int, num_candidates: int):
 
 # Can be used for borda count
 def create_borda_count(num_candidates: int):
-    return (
-        np.full(num_candidates, num_candidates) - np.arange(num_candidates) - 1
-    )
+    return np.full(num_candidates, num_candidates) - np.arange(num_candidates) - 1

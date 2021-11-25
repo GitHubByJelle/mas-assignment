@@ -90,16 +90,12 @@ class Voter:
 
         # Determine current happiness
         curr_happiness = self.determine_happiness(
-            self.outcome_to_ranked_ids(outcome),
-            voting_scheme,
-            happiness_scheme,
+            self.outcome_to_ranked_ids(outcome), voting_scheme, happiness_scheme,
         )
 
         # Determine outcome without voter
         blank_outcome = self.remove_pref_outcome(
-            outcome,
-            self.true_preferences,
-            voting_scheme_vector,
+            outcome, self.true_preferences, voting_scheme_vector,
         )
 
         # For every permutation of preferences
