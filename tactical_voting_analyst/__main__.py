@@ -19,20 +19,17 @@ def main():
     candidates = np.arange(
         len(candidates_names)
     )  # assign integer to each candidate, so we can use numpy
-    preferences = np.array(
-        [
-            [0, 1, 2, 3],
-            [1, 2, 3, 0],
-            [2, 3, 0, 1],
-            [0, 1, 2, 3],
-            [1, 2, 3, 0],
-            [2, 3, 0, 1],
-            [0, 1, 2, 3],
+    preferences = [
+            (0, 1, 2, 3),
+            (1, 2, 3, 0),
+            (2, 3, 0, 1),
+            (0, 1, 2, 3),
+            (1, 2, 3, 0),
+            (2, 3, 0, 1),
+            (0, 1, 2, 3),
         ]
-    )
-    voters = [Voter(np.expand_dims(preference, 0)) for preference in preferences]
     # Create TVA
-    TVA = TacticalVotingAnalyst(candidates, candidates_names, voters)
+    TVA = TacticalVotingAnalyst(candidates, candidates_names, preferences)
 
     # print("\n", TVA.get_winner(np.array([3., 2., 1., 0.]), True))
     # print(TVA.overall_happiness())

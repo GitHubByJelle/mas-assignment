@@ -37,7 +37,7 @@ class Voter:
         :param ranked_candidates_id: ranked ndarray of 1 dimension
         ranked_candidates_id[1] = 3 means that candidate with id=3 ranked second in the final outcome
         """
-        true_preferences = self.true_preferences[0]
+        true_preferences = self.true_preferences
         # Count happiness
         happiness = 0
         if happiness_scheme == HappinessScheme.borda_count:
@@ -142,7 +142,7 @@ class Voter:
         :return: Outcome after removing preference
         """
         outcome = outcome.copy()
-        sorting_idxs = preference.argsort()[0]
+        sorting_idxs = preference.argsort()
         sorted_voting_scheme = voting_scheme_vector[sorting_idxs]
         outcome -= sorted_voting_scheme
         return outcome
