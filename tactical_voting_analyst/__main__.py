@@ -36,8 +36,8 @@ def main():
     # TVA.determine_tactical_options(
     #     VotingScheme.borda_count, HappinessScheme.borda_count
     # )
-    TVA.determine_paired_tactical_options(
-        VotingScheme.borda_count, HappinessScheme.borda_count, 3
+    TVA.determine_tactical_options(
+        VotingScheme.borda_count, HappinessScheme.borda_count
     )
     # print(f"{TVA.get_winners()=}")
     # for voting_scheme in VotingScheme:
