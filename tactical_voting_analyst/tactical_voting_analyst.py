@@ -191,12 +191,14 @@ class TacticalVotingAnalyst:
                             )
                         )
                 print()
+        """
         print(
             "Risk: ",
             self.calculate_risk3(
                 outcome, voting_scheme, happiness_scheme, tactical_options
             ),
         )
+        """
         return tactical_options
 
     def determine_paired_tactical_options(
