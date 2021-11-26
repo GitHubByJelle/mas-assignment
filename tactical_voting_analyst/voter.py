@@ -48,6 +48,7 @@ class Voter:
 
         if happiness_scheme == HappinessScheme.borda_count:
             borda_weights = np.arange(len(ranked_candidates_id) - 1, -1, -1)
+            norm_value = np.dot(borda_weights, borda_weights)
             argsorting = np.arange(len(ranked_candidates_id))
             argsorting[ranked_candidates_id] = argsorting.copy()
             # the above argsorting is computed using counting sort, a sorting method that has linear time complexity, thus better than np.argsort, but effectively it does the same
@@ -57,6 +58,8 @@ class Voter:
             happiness = np.dot(
                 borda_weights, borda_weights[indices]
             )  # multiply elementwise ans sum everything up
+            #normalize
+            happiness = happiness/norm_value
 
         elif happiness_scheme == HappinessScheme.linear_weight:
             linear_weights = np.arange(len(ranked_candidates_id), 0, -1)
