@@ -172,7 +172,7 @@ class TacticalVotingAnalyst:
         self,
         voting_scheme: VotingScheme,
         happiness_scheme: HappinessScheme,
-    ):
+    ) -> list[list]:
         """
         Determine the tactical voting options for all voters
         :param happiness_scheme: Happiness scheme to calculate happiness
