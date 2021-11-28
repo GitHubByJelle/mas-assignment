@@ -427,50 +427,43 @@ class TacticalVotingAnalyst:
             )[(-outcome).argsort()]
         )
 
-    def calculate_risk(self, tactical_options: list[tuple]) -> float:
-        return len(tuple(to for to in tactical_options if len(to) > 0)) / len(
-            tactical_options
-        )
-        # non_empty_options = 0
-        # for voter_tactical_options in tactical_options:
-        #    if len(voter_tactical_options) != 0:
-        #        non_empty_options += 1
-        # return non_empty_options / len(tactical_options)
-
-    def calculate_risk2(
-        self, voting_scheme: VotingScheme, happiness_scheme: HappinessScheme
-    ) -> float:
-        tactical_options = self.determine_tactical_options(
-            voting_scheme, happiness_scheme
-        )
-        number_candidates = len(self.voting_situation.candidates)
-        x = 0
-        for voter_tactical_options in tactical_options:
-            x += len(voter_tactical_options) / math.factorial(
-                number_candidates
-            )
-        risk2 = x / len(tactical_options)
-        return risk2
-
-    def calculate_risk3(
+    def calculate_risk(
         self,
-        outcome,
+        tactical_options: list[tuple],
         voting_scheme: VotingScheme,
         happiness_scheme: HappinessScheme,
-        tactical_options,
+        version=0,
     ) -> float:
-        print("Outcome is: ", outcome)
-
-        def determine_happiness(outcome):
-            return sum(
-                voter.determine_happiness(outcome)
-                for voter in self.voting_situation.voters
+        risk = 0
+        if version == 0:
+            risk = len(
+                tuple(to for to in tactical_options if len(to) > 0)
+            ) / len(tactical_options)
+        elif version == 1:
+            tactical_options = self.determine_tactical_options(
+                voting_scheme, happiness_scheme
             )
+            number_candidates = len(self.voting_situation.candidates)
+            x = 0
+            for voter_tactical_options in tactical_options:
+                x += len(voter_tactical_options) / math.factorial(
+                    number_candidates
+                )
+            risk = x / len(tactical_options)
+        elif version == 3:
 
-        def x(tactical_option):
-            return self.overall_happiness(voting_scheme) - determine_happiness(
-                tactical_option
+            def determine_happiness(outcome):
+                return sum(
+                    voter.determine_happiness(outcome)
+                    for voter in self.voting_situation.voters
+                )
+
+            def x(tactical_option):
+                return self.overall_happiness(
+                    voting_scheme
+                ) - determine_happiness(tactical_option)
+
+            # outcome = self.get_winner(self.voting_schemes[voting_scheme])
+            risk = sum(x(to) for to in tactical_options) / len(
+                tactical_options
             )
-
-        # outcome = self.get_winner(self.voting_schemes[voting_scheme])
-        return sum(x(to) for to in tactical_options) / len(tactical_options)
