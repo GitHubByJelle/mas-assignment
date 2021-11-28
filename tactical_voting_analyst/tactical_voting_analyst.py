@@ -467,3 +467,37 @@ class TacticalVotingAnalyst:
             risk = sum(x(to) for to in tactical_options) / len(
                 tactical_options
             )
+
+    def impact_on_all_other_happiness(self, voting_scheme: VotingScheme, happiness_scheme: HappinessScheme):
+        """
+        :return: the impact is measured as the average of difference between the new happiness and the true happiness for
+        each tactical option (for all voters)
+        """
+
+        # determine true happiness H
+        true_H = self.overall_happiness(voting_scheme)
+
+        # compute tactical options
+        tactical_options = self.determine_tactical_options(voting_scheme, happiness_scheme)
+
+        # For every tactical option we want to measure the difference in happiness
+        #ToDo: we should consider creating a unique overall_happines with the option to input an outcome
+        def new_overall_H(outcome):
+            ranked_candidates_id = np.argsort(-outcome)
+            return sum(
+                voter.determine_happiness(ranked_candidates_id)
+                * (self.__voter_multipliers[tuple(voter.true_preferences)])
+                for voter in self.voting_situation.voters
+            ) / len(self.voting_situation.voters)
+
+        diff = 0
+        n = 0  # number of tactical options
+        for voter in tactical_options:
+            for pref in voter:
+                # compute new overall_happiness H' and diff = H' - H
+                new_H = new_overall_H(pref[3])
+                diff += new_H - true_H
+                n+=1
+
+        impact = diff/n if n>0 else 0
+        return impact
