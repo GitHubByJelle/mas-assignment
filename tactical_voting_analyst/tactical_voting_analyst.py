@@ -478,7 +478,7 @@ class TacticalVotingAnalyst:
         true_H = self.overall_happiness(voting_scheme)
 
         # compute tactical options
-        tactical_options = self.determine_tactical_options(voting_scheme, happiness_scheme)
+        self.determine_tactical_options(voting_scheme, happiness_scheme)
 
         # For every tactical option we want to measure the difference in happiness
         #ToDo: we should consider creating a unique overall_happines with the option to input an outcome
@@ -491,13 +491,11 @@ class TacticalVotingAnalyst:
             ) / len(self.voting_situation.voters)
 
         diff = 0
-        n = 0  # number of tactical options
-        for voter in tactical_options:
-            for pref in voter:
-                # compute new overall_happiness H' and diff = H' - H
-                new_H = new_overall_H(pref[3])
-                diff += new_H - true_H
-                n+=1
+        for voter in self.voting_situation.voters:
+            pref = voter.tactical_options[0]
+            # compute new overall_happiness H' and diff = H' - H
+            new_H = new_overall_H(pref[3])
+            diff += new_H - true_H
 
-        impact = diff/n if n>0 else 0
+        impact = diff/len(self.voting_situation.voters) if diff > 0 else 0
         return impact
