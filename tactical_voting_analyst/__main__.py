@@ -44,13 +44,20 @@ def main():
     #     VotingScheme.borda_count, HappinessScheme.borda_count
     # ))
 
+    for i, t_opts in enumerate(TVA.determine_tactical_options_run_off_election(np.array(preferences),
+                                                                 HappinessScheme.borda_count)):
+        print("Voter {}".format(i))
+        for t_opt in t_opts:
+            print(t_opt)
+        print()
+
     # TVA.voting_situation.create_majority_graph_preferences(TVA.voting_situation.determine_majority_table())
-    TVA.voting_situation.create_majority_graph_preferences(
-        TVA.voting_situation.get_impact_tactical_options_majority_table(
-            TVA.determine_tactical_options(
-                VotingScheme.borda_count, HappinessScheme.borda_count
-            )
-        ))
+    # TVA.voting_situation.create_majority_graph_preferences(
+    #     TVA.voting_situation.get_impact_tactical_options_majority_table(
+    #         TVA.determine_tactical_options(
+    #             VotingScheme.borda_count, HappinessScheme.borda_count
+    #         )
+    #     ))
     # print(f"{TVA.get_winners()=}")
     # for voting_scheme in VotingScheme:
     #     print(

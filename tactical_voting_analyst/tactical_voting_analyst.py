@@ -499,3 +499,109 @@ class TacticalVotingAnalyst:
 
         impact = diff/len(self.voting_situation.voters) if diff > 0 else 0
         return impact
+
+    def determine_tactical_options_run_off_election(self, preferences: np.ndarray,
+                                                    happiness_scheme: HappinessScheme =
+                                                    HappinessScheme.borda_count) -> list[list[tuple]]:
+        """
+        Determine tactical options on run off election going over all permutations
+        :param preferences: Get all real preferences of all voters
+        :param happiness_scheme: Happiness scheme used
+        :return: All tactical options
+        """
+        # Create list for tactical options
+        tactical_options = []
+
+        # Get number of voters and candidates
+        V = preferences.shape[0]
+        C = preferences.shape[1]
+
+        # For each voter
+        for i in range(V):
+            # Create a list for the voter
+            options_voter = []
+
+            # Determine current happiness
+            curr_happiness = self.voting_situation.voters[i].determine_happiness(
+                self.run_off_outcome_to_ranking(self.perform_run_off_election(preferences)),
+                happiness_scheme)
+
+            temp_preferences = preferences.copy()
+            # Look at all permutations
+            for perm in itertools.permutations(np.arange(C)):
+                # Replace with preference
+                temp_preferences[i, ...] = np.array(perm)
+                print(temp_preferences)
+
+                # Get outcome of performing run off election
+                outcome = self.perform_run_off_election(temp_preferences)
+
+                # Get ranking of candidates
+                ranking = self.run_off_outcome_to_ranking(outcome)
+
+                # Calculate happiness
+                new_happiness = self.voting_situation.voters[i].determine_happiness(
+                    ranking, happiness_scheme)
+
+                if new_happiness > curr_happiness:
+                    options_voter.append((perm, curr_happiness, new_happiness, ranking))
+
+            # Add to tactical options
+            tactical_options.append(options_voter)
+
+        return tactical_options
+
+
+    def perform_run_off_election(self, preferences: np.ndarray) \
+            -> tuple:
+        """
+        Run off election: Voting is done in two rounds: in the first round each voter casts a single vote
+        (“vote for 1”) and the two best candidates are selected, and in the second round the
+        winner is determined.
+        :param preferences: preferences of all voters
+        :return: Outcome round 1, winners round 1, outcome round 2, winner round 2 (winner of election)
+        """
+        # FIRST ROUND
+        # NORMAL VOTING
+        # Create a counter for every candidate
+        counter = np.zeros(len(self.voting_situation.candidates))
+
+        # For every preference
+        for i in range(preferences.shape[0]):
+            # Add score to preference
+            counter[preferences[i]] += (
+                self.voting_schemes_vectors[VotingScheme.plurality]
+                * self.__voter_multipliers[tuple(self.voting_situation.voters[i].true_preferences)]
+            )
+
+        # Get two winners
+        two_winners = (-counter).argsort()[:2].astype(np.int32)
+
+        ## ROUND TWO
+        # Determine wins for number one and number two (simple majority selection)
+        wins_one = (np.where(preferences == two_winners[0])[1] <
+                      np.where(preferences == two_winners[1])[1]).sum()
+        wins_two = preferences.shape[0] - wins_one
+
+        # Get winner
+        winner = two_winners[0] if wins_one > wins_two else two_winners[1]
+
+        # Return results
+        return (counter, two_winners, (wins_one, wins_two), winner)
+
+    def run_off_outcome_to_ranking(self, run_off_outcome: tuple) -> np.ndarray:
+        """
+        Convert to run off outcome to a ranking of candidates
+        :param run_off_outcome:
+        :return: ranking of candidates
+        """
+        # Round one ranked
+        ranked = (-run_off_outcome[0]).argsort().astype(np.int32)
+
+        # Round two swapped?
+        if run_off_outcome[1][0] != run_off_outcome[3]:
+            ranked[0] = run_off_outcome[3]
+            ranked[1] = run_off_outcome[1][0]
+
+        return ranked
+

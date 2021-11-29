@@ -28,7 +28,6 @@ class Voter:
     def determine_happiness(
         self,
         ranked_candidates_id: np.ndarray,
-        voting_scheme: VotingScheme = VotingScheme.borda_count,
         happiness_scheme: HappinessScheme = HappinessScheme.borda_count,
     ):
         """
@@ -107,7 +106,7 @@ class Voter:
 
         # Determine current happiness
         curr_happiness = self.determine_happiness(
-            self.outcome_to_ranked_ids(outcome), voting_scheme, happiness_scheme,
+            self.outcome_to_ranked_ids(outcome), happiness_scheme,
         )
 
         # Determine outcome without voter
@@ -128,7 +127,6 @@ class Voter:
             # Calculate new happiness
             new_happiness = self.determine_happiness(
                 self.outcome_to_ranked_ids(new_outcome),
-                voting_scheme,
                 happiness_scheme,
             )
 
