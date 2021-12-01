@@ -1,6 +1,5 @@
 import numpy as np
 import itertools
-from scipy import stats
 import matplotlib.pyplot as plt
 
 
@@ -8,6 +7,7 @@ def init_voters(
     candidates: tuple[str, ...],
     total_number_of_voters: int = 10000,
     distribution_function: str = "normal",
+    plot=False,
 ) -> tuple[np.ndarray, np.ndarray]:
     permutations = tuple(itertools.permutations(candidates))
 
@@ -23,19 +23,20 @@ def init_voters(
             if i >= 0 and i <= len(permutations) - 1:
                 done += 1
                 vals[int(i)] += 1
-        plt.plot(np.arange(len(vals)), vals)
-        plt.xticks(
-            np.arange(len(permutations)),
-            tuple(f'"{" ".join(p)}"' for p in permutations),
-            rotation=45,
-            ha="right",
-        )
-        # plt.show()
+        if plot:
+            plt.plot(np.arange(len(vals)), vals)
+            plt.xticks(
+                np.arange(len(permutations)),
+                tuple(f'{" ".join(p)}' for p in permutations),
+                rotation=45,
+                ha="right",
+            )
+            plt.show()
     return np.array(permutations), vals
 
 
 def test():
-    preferences, voter_counts = init_voters(("A", "B", "C", "D"))
+    preferences, voter_counts = init_voters(("A", "B", "C", "D"), plot=True)
     print(preferences)
     print(voter_counts)
 
