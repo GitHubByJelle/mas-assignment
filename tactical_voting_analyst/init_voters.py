@@ -1,38 +1,48 @@
 import numpy as np
 import itertools
 import matplotlib.pyplot as plt
+from scipy.stats import norm
 
 
 def init_voters(
     candidates: tuple[str, ...],
-    total_number_of_voters: int = 10000,
+    voters_count: int = 10000,
     distribution_function: str = "normal",
+    stochastic=False,
     plot=False,
 ) -> tuple[np.ndarray, np.ndarray]:
     permutations = tuple(itertools.permutations(candidates))
+    xs = np.arange(len(permutations))
+    std = len(permutations) / 8
+    mean = len(permutations) / 2
+    observations = np.array(np.zeros(len(permutations), dtype=int))
+    if stochastic:
+        print(f"{permutations=}")
+        if distribution_function == "normal":
+            done = 0
+            while done < voters_count:
+                i = np.random.normal(mean, std)
+                if i >= 0 and i <= len(permutations) - 1:
+                    done += 1
+                    observations[int(i)] += 1
+    else:
+        prob_dense = norm(loc=mean, scale=std)
+        observations = [np.round(prob_dense.pdf(x) * voters_count) for x in xs]
 
-    vals = np.array(tuple(0 for _ in range(len(permutations))))
-    print(f"{permutations=}")
-    if distribution_function == "normal":
-        std = len(permutations) / 8
-        loc = len(permutations) / 2
-        vals = np.array(tuple(0 for _ in range(len(permutations))))
-        done = 0
-        while done < total_number_of_voters:
-            i = np.random.normal(loc, std)
-            if i >= 0 and i <= len(permutations) - 1:
-                done += 1
-                vals[int(i)] += 1
-        if plot:
-            plt.plot(np.arange(len(vals)), vals)
-            plt.xticks(
-                np.arange(len(permutations)),
-                tuple(f'{" ".join(p)}' for p in permutations),
-                rotation=45,
-                ha="right",
-            )
-            plt.show()
-    return np.array(permutations), vals
+        print(sum(j for j in observations))
+        print(len(observations))
+        print(observations)
+
+    if plot:
+        plt.scatter(np.arange(len(observations)), observations)
+        plt.xticks(
+            np.arange(len(permutations)),
+            tuple(f'{" ".join(p)}' for p in permutations),
+            rotation=45,
+            ha="right",
+        )
+        plt.show()
+    return np.array(permutations), observations
 
 
 def test():

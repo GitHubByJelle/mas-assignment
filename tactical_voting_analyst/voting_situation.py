@@ -72,7 +72,9 @@ class VotingSituation:  # TODO: do we really need this class?
 
         return counts > counts.T
 
-    def create_majority_graph_preferences(self, majority_table, file_name="majority_graph"):
+    def create_majority_graph_preferences(
+        self, majority_table, file_name="majority_graph"
+    ):
         """
         Create a html file for the visualisation of the majority graph
         :param majority_table: Table with majority values
@@ -81,7 +83,7 @@ class VotingSituation:  # TODO: do we really need this class?
         """
         # Create net
         net = Network(directed=True)
-        net.set_edge_smooth('continuous')
+        net.set_edge_smooth("continuous")
 
         # Create nodes
         num_cand = len(self.candidate_names)
@@ -92,12 +94,13 @@ class VotingSituation:  # TODO: do we really need this class?
         for i in range(num_cand - 1):
             for j in range(i + 1, num_cand):
                 if majority_table[i, j] > 0:
-                    net.add_edge(i, j, width = float(majority_table[i, j]) * 3)
+                    net.add_edge(i, j, width=float(majority_table[i, j]) * 3)
                 if majority_table[j, i] > 0:
-                    net.add_edge(j, i, width = float(majority_table[j, i]) * 3)
+                    net.add_edge(j, i, width=float(majority_table[j, i]) * 3)
 
         # Set options and show / save
-        net.set_options("""var options = {
+        net.set_options(
+            """var options = {
           "nodes": {
             "color": {
               "border": "rgba(0,0,0,1)",
@@ -136,11 +139,13 @@ class VotingSituation:  # TODO: do we really need this class?
             "minVelocity": 0.6,
             "solver": "forceAtlas2Based"
           }
-        }""")
-        net.show('{}.html'.format(file_name))
+        }"""
+        )
+        net.show("{}.html".format(file_name))
 
-
-    def get_impact_tactical_options_majority_table(self, tactical_options: list[list]) -> np.ndarray:
+    def get_impact_tactical_options_majority_table(
+        self, tactical_options: list[list]
+    ) -> np.ndarray:
         """
         How does the majority graph look after tactical voting. This function will return an normalized
         table that relatively indicates in how many cases (if a single voter uses his tactical vote)
@@ -151,7 +156,9 @@ class VotingSituation:  # TODO: do we really need this class?
         preferences = self.get_all_preferences()
 
         # Create one table to keep track of the winning candidates
-        majority_table = np.zeros((len(self.candidate_names), len(self.candidate_names)))
+        majority_table = np.zeros(
+            (len(self.candidate_names), len(self.candidate_names))
+        )
 
         # For every voter / vote
         for i in range(len(self.voters)):

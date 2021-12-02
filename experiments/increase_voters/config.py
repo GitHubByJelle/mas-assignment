@@ -11,49 +11,32 @@ CANDIDATES_NAMES = (
     "D",
 )
 
-CANDIDATES = np.arange(
-    len(CANDIDATES_NAMES)
-)
+CANDIDATES = np.arange(len(CANDIDATES_NAMES))
 
 PREFERENCES = [
+    np.array([[0, 1, 2, 3], [1, 2, 3, 0], [2, 3, 0, 1], [0, 1, 2, 3]]),
+    np.array([[0, 1, 2, 3], [1, 2, 3, 0], [2, 3, 0, 1], [0, 1, 2, 3], [1, 2, 3, 0],]),
     np.array(
         [
             [0, 1, 2, 3],
             [1, 2, 3, 0],
             [2, 3, 0, 1],
-            [0, 1, 2, 3]
+            [0, 1, 2, 3],
+            [1, 2, 3, 0],
+            [2, 3, 0, 1],
+            [0, 1, 2, 3],
         ]
     ),
-
-    np.array(
-        [
-            [0, 1, 2, 3],
-            [1, 2, 3, 0],
-            [2, 3, 0, 1],
-            [0, 1, 2, 3],
-            [1, 2, 3, 0],
-        ]
-    ),
-
-    np.array(
-        [
-            [0, 1, 2, 3],
-            [1, 2, 3, 0],
-            [2, 3, 0, 1],
-            [0, 1, 2, 3],
-            [1, 2, 3, 0],
-            [2, 3, 0, 1],
-            [0, 1, 2, 3],
-        ]
-    )
 ]
 
 TVA = TacticalVotingAnalyst
 
-VOTING_SCHEMES = [VotingScheme.borda_count,
-                  VotingScheme.plurality,
-                  VotingScheme.vote_for_two,
-                  VotingScheme.anti_plurality]
+VOTING_SCHEMES = [
+    VotingScheme.borda_count,
+    VotingScheme.plurality,
+    VotingScheme.vote_for_two,
+    VotingScheme.anti_plurality,
+]
 
 HAPPINESS_SCHEME = HappinessScheme.borda_count
 

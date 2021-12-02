@@ -30,8 +30,7 @@ def main():
     ]
     # Create TVA
     TVA = TacticalVotingAnalyst(candidates, candidates_names, preferences)
-
-    # print("\n", TVA.get_winner(np.array([3., 2., 1., 0.]), True))
+    print("\n", TVA.get_winner(np.array([3.0, 2.0, 1.0, 0.0])))
     # print(TVA.overall_happiness())
     # TVA.determine_tactical_options(
     #     VotingScheme.borda_count, HappinessScheme.borda_count
@@ -44,8 +43,11 @@ def main():
     #     VotingScheme.borda_count, HappinessScheme.borda_count
     # ))
 
-    for i, t_opts in enumerate(TVA.determine_tactical_options_run_off_election(np.array(preferences),
-                                                                 HappinessScheme.borda_count)):
+    for i, t_opts in enumerate(
+        TVA.determine_tactical_options_run_off_election(
+            np.array(preferences), HappinessScheme.borda_count
+        )
+    ):
         print("Voter {}".format(i))
         for t_opt in t_opts:
             print(t_opt)

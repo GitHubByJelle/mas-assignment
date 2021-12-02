@@ -44,16 +44,10 @@ class TacticalVotingAnalyst:
         }
         voters = [
             Voter(np.array(preference))
-            for preference in (
-                unique_preferences if optimize_voters else preferences
-            )
+            for preference in (unique_preferences if optimize_voters else preferences)
         ]
-        self.voting_situation = VotingSituation(
-            candidates, candidate_names, voters
-        )
-        self.voting_schemes_vectors = self.__create_voting_vectors(
-            len(candidates)
-        )
+        self.voting_situation = VotingSituation(candidates, candidate_names, voters)
+        self.voting_schemes_vectors = self.__create_voting_vectors(len(candidates))
 
     def __create_voting_vectors(self, num_candidates: int) -> np.ndarray:
         """
@@ -62,12 +56,8 @@ class TacticalVotingAnalyst:
         :return: Dictionary with vectors for several voting schemes
         """
         named_voting_vectors = {
-            VotingScheme.plurality: create_vote_for_n_vector(
-                1, num_candidates
-            ),
-            VotingScheme.vote_for_two: create_vote_for_n_vector(
-                2, num_candidates
-            ),
+            VotingScheme.plurality: create_vote_for_n_vector(1, num_candidates),
+            VotingScheme.vote_for_two: create_vote_for_n_vector(2, num_candidates),
             VotingScheme.borda_count: create_borda_count(num_candidates),
             VotingScheme.anti_plurality: create_vote_for_n_vector(
                 num_candidates - 1, num_candidates
@@ -94,9 +84,9 @@ class TacticalVotingAnalyst:
         # For every voter
         for voter in self.voting_situation.voters:
             # Add score to preference of voter
-            counter[voter.true_preferences] += (
-                voting_scheme
-                * self.__voter_multipliers[tuple(voter.true_preferences)]
+            ipdb.set_trace()
+            counter[voter.true_preferences[0]] += (
+                voting_scheme * self.__voter_multipliers[tuple(voter.true_preferences)]
             )
 
             # for i in range(len(voter.true_preferences[0])):
@@ -134,10 +124,7 @@ class TacticalVotingAnalyst:
         """
         # Create ndarray
         winners = np.zeros(
-            (
-                len(self.voting_schemes_vectors),
-                len(self.voting_situation.candidates),
-            )
+            (len(self.voting_schemes_vectors), len(self.voting_situation.candidates),)
         )
 
         # For every voting scheme, determine the ranked list of candidates
@@ -148,9 +135,7 @@ class TacticalVotingAnalyst:
         return winners
 
     def overall_happiness(self, voting_scheme: VotingScheme):
-        return self.__overall_happiness(
-            self.voting_schemes_vectors[voting_scheme]
-        )
+        return self.__overall_happiness(self.voting_schemes_vectors[voting_scheme])
 
     def __overall_happiness(
         self, voting_scheme: np.ndarray
@@ -169,9 +154,7 @@ class TacticalVotingAnalyst:
         ) / len(self.voting_situation.voters)
 
     def determine_tactical_options(
-        self,
-        voting_scheme: VotingScheme,
-        happiness_scheme: HappinessScheme,
+        self, voting_scheme: VotingScheme, happiness_scheme: HappinessScheme,
     ) -> list[list]:
         """
         Determine the tactical voting options for all voters
@@ -209,9 +192,7 @@ class TacticalVotingAnalyst:
                                 pref[1],
                                 pref[2],
                                 " > ".join(
-                                    self.voting_situation.candidate_names[
-                                        pref[0]
-                                    ]
+                                    self.voting_situation.candidate_names[pref[0]]
                                 ),
                                 self.__create_outcome_str(pref[3]),
                             )
@@ -244,9 +225,7 @@ class TacticalVotingAnalyst:
         outcome = self.get_winner(self.voting_schemes_vectors[voting_scheme])
 
         # Print current outcome
-        self.print(
-            "Current outcome: {}\n".format(self.__create_outcome_str(outcome))
-        )
+        self.print("Current outcome: {}\n".format(self.__create_outcome_str(outcome)))
 
         # Create list for tactical options
         tactical_options = []
@@ -311,10 +290,7 @@ class TacticalVotingAnalyst:
                 )
                 # If happiness is better for ALL voters in the coalition, add
                 if np.array(
-                    [
-                        new_happiness[i] > curr_happiness[i]
-                        for i in range(size_pairs)
-                    ]
+                    [new_happiness[i] > curr_happiness[i] for i in range(size_pairs)]
                 ).all():
                     tactical_option = tuple(
                         (
@@ -403,9 +379,7 @@ class TacticalVotingAnalyst:
                         " & ".join([str(x[0]) for x in pref]),
                         ", ".join([str(x[2]) for x in pref]),
                         ", ".join([str(x[3]) for x in pref]),
-                        " > ".join(
-                            self.voting_situation.candidate_names[pref[0][1]]
-                        ),
+                        " > ".join(self.voting_situation.candidate_names[pref[0][1]]),
                         self.__create_outcome_str(pref[0][4]),
                     )
                 )
@@ -420,9 +394,7 @@ class TacticalVotingAnalyst:
         """
         return ", ".join(
             np.core.defchararray.add(
-                np.core.defchararray.add(
-                    self.voting_situation.candidate_names, ": "
-                ),
+                np.core.defchararray.add(self.voting_situation.candidate_names, ": "),
                 outcome.astype(np.int32).astype(str),
             )[(-outcome).argsort()]
         )
@@ -436,9 +408,9 @@ class TacticalVotingAnalyst:
     ) -> float:
         risk = 0
         if version == 0:
-            risk = len(
-                tuple(to for to in tactical_options if len(to) > 0)
-            ) / len(tactical_options)
+            risk = len(tuple(to for to in tactical_options if len(to) > 0)) / len(
+                tactical_options
+            )
         elif version == 1:
             tactical_options = self.determine_tactical_options(
                 voting_scheme, happiness_scheme
@@ -446,9 +418,7 @@ class TacticalVotingAnalyst:
             number_candidates = len(self.voting_situation.candidates)
             x = 0
             for voter_tactical_options in tactical_options:
-                x += len(voter_tactical_options) / math.factorial(
-                    number_candidates
-                )
+                x += len(voter_tactical_options) / math.factorial(number_candidates)
             risk = x / len(tactical_options)
         elif version == 3:
 
@@ -459,16 +429,16 @@ class TacticalVotingAnalyst:
                 )
 
             def x(tactical_option):
-                return self.overall_happiness(
-                    voting_scheme
-                ) - determine_happiness(tactical_option)
+                return self.overall_happiness(voting_scheme) - determine_happiness(
+                    tactical_option
+                )
 
             # outcome = self.get_winner(self.voting_schemes[voting_scheme])
-            risk = sum(x(to) for to in tactical_options) / len(
-                tactical_options
-            )
+            risk = sum(x(to) for to in tactical_options) / len(tactical_options)
 
-    def impact_on_all_other_happiness(self, voting_scheme: VotingScheme, happiness_scheme: HappinessScheme):
+    def impact_on_all_other_happiness(
+        self, voting_scheme: VotingScheme, happiness_scheme: HappinessScheme
+    ):
         """
         :return: the impact is measured as the average of difference between the new happiness and the true happiness for
         each tactical option (for all voters)
@@ -481,7 +451,7 @@ class TacticalVotingAnalyst:
         self.determine_tactical_options(voting_scheme, happiness_scheme)
 
         # For every tactical option we want to measure the difference in happiness
-        #ToDo: we should consider creating a unique overall_happines with the option to input an outcome
+        # ToDo: we should consider creating a unique overall_happines with the option to input an outcome
         def new_overall_H(outcome):
             ranked_candidates_id = np.argsort(-outcome)
             return sum(
@@ -497,12 +467,14 @@ class TacticalVotingAnalyst:
             new_H = new_overall_H(pref[3])
             diff += new_H - true_H
 
-        impact = diff/len(self.voting_situation.voters) if diff > 0 else 0
+        impact = diff / len(self.voting_situation.voters) if diff > 0 else 0
         return impact
 
-    def determine_tactical_options_run_off_election(self, preferences: np.ndarray,
-                                                    happiness_scheme: HappinessScheme =
-                                                    HappinessScheme.borda_count) -> list[list[tuple]]:
+    def determine_tactical_options_run_off_election(
+        self,
+        preferences: np.ndarray,
+        happiness_scheme: HappinessScheme = HappinessScheme.borda_count,
+    ) -> list[list[tuple]]:
         """
         Determine tactical options on run off election going over all permutations
         :param preferences: Get all real preferences of all voters
@@ -523,8 +495,11 @@ class TacticalVotingAnalyst:
 
             # Determine current happiness
             curr_happiness = self.voting_situation.voters[i].determine_happiness(
-                self.run_off_outcome_to_ranking(self.perform_run_off_election(preferences)),
-                happiness_scheme)
+                self.run_off_outcome_to_ranking(
+                    self.perform_run_off_election(preferences)
+                ),
+                happiness_scheme,
+            )
 
             temp_preferences = preferences.copy()
             # Look at all permutations
@@ -541,7 +516,8 @@ class TacticalVotingAnalyst:
 
                 # Calculate happiness
                 new_happiness = self.voting_situation.voters[i].determine_happiness(
-                    ranking, happiness_scheme)
+                    ranking, happiness_scheme
+                )
 
                 if new_happiness > curr_happiness:
                     options_voter.append((perm, curr_happiness, new_happiness, ranking))
@@ -551,9 +527,7 @@ class TacticalVotingAnalyst:
 
         return tactical_options
 
-
-    def perform_run_off_election(self, preferences: np.ndarray) \
-            -> tuple:
+    def perform_run_off_election(self, preferences: np.ndarray) -> tuple:
         """
         Run off election: Voting is done in two rounds: in the first round each voter casts a single vote
         (“vote for 1”) and the two best candidates are selected, and in the second round the
@@ -571,7 +545,9 @@ class TacticalVotingAnalyst:
             # Add score to preference
             counter[preferences[i]] += (
                 self.voting_schemes_vectors[VotingScheme.plurality]
-                * self.__voter_multipliers[tuple(self.voting_situation.voters[i].true_preferences)]
+                * self.__voter_multipliers[
+                    tuple(self.voting_situation.voters[i].true_preferences)
+                ]
             )
 
         # Get two winners
@@ -579,8 +555,10 @@ class TacticalVotingAnalyst:
 
         ## ROUND TWO
         # Determine wins for number one and number two (simple majority selection)
-        wins_one = (np.where(preferences == two_winners[0])[1] <
-                      np.where(preferences == two_winners[1])[1]).sum()
+        wins_one = (
+            np.where(preferences == two_winners[0])[1]
+            < np.where(preferences == two_winners[1])[1]
+        ).sum()
         wins_two = preferences.shape[0] - wins_one
 
         # Get winner
@@ -604,4 +582,3 @@ class TacticalVotingAnalyst:
             ranked[1] = run_off_outcome[1][0]
 
         return ranked
-
