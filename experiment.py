@@ -33,8 +33,10 @@ class Experiment:
             pass
 
     def run_simple_experiment(self):
-        self.voters = [Voter(preference) for preference in self.preferences]
-        self.tva = self.TVA(self.candidates, self.candidates_names, self.voters)
+        # self.voters = [Voter(preference) for preference in self.preferences]
+        self.tva = self.TVA(
+            self.candidates, self.candidates_names, self.preferences
+        )
         ax = self.create_ax()
         schemes_happiness_risk = []
         for vs in self.voting_schemes:
@@ -66,7 +68,10 @@ class Experiment:
                     schemes_happiness_risk[vs_string] = []
                 else:
                     schemes_happiness_risk[vs_string].append(
-                        ((scheme_happiness, scheme_risk), f"{vs_string}_{len(cnames)}")
+                        (
+                            (scheme_happiness, scheme_risk),
+                            f"{vs_string}_{len(cnames)}",
+                        )
                     )
 
         all_x_points = []
@@ -74,7 +79,9 @@ class Experiment:
         all_annots = []
         for vs in schemes_happiness_risk:
             print(vs, schemes_happiness_risk[vs])
-            ys, xs = list(zip(*[vs_n[0] for vs_n in schemes_happiness_risk[vs]]))
+            ys, xs = list(
+                zip(*[vs_n[0] for vs_n in schemes_happiness_risk[vs]])
+            )
             all_x_points += xs
             all_y_points += ys
             annots = [vs_n[1] for vs_n in schemes_happiness_risk[vs]]
@@ -95,7 +102,9 @@ class Experiment:
                 Voter(np.expand_dims(preference, 0))
                 for preference in self.preferences[i]
             ]
-            self.tva = self.TVA(self.candidates, self.candidates_names, self.voters)
+            self.tva = self.TVA(
+                self.candidates, self.candidates_names, self.voters
+            )
             for vs in self.voting_schemes:
                 vs_string = str(vs.__repr__())[14:].split(":")[0]
                 scheme_risk, scheme_happiness = self.get_risk_and_happiness(vs)
@@ -114,7 +123,9 @@ class Experiment:
         all_annots = []
         for vs in schemes_happiness_risk:
             print(vs, schemes_happiness_risk[vs])
-            ys, xs = list(zip(*[vs_n[0] for vs_n in schemes_happiness_risk[vs]]))
+            ys, xs = list(
+                zip(*[vs_n[0] for vs_n in schemes_happiness_risk[vs]])
+            )
             all_x_points += xs
             all_y_points += ys
             annots = [vs_n[1] for vs_n in schemes_happiness_risk[vs]]
