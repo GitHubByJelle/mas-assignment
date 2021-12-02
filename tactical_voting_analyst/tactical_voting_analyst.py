@@ -26,6 +26,7 @@ class TacticalVotingAnalyst:
         candidates: np.ndarray,
         candidate_names: tuple[str, ...],
         preferences: list[tuple[int, ...]],
+        *,
         optimize_voters=False,
         verbose=True,
     ):
