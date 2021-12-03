@@ -37,3 +37,7 @@ VOTING_SCHEMES = [
 HAPPINESS_SCHEME = HappinessScheme.borda_count
 
 EXPERIMENT_TYPE = ExperimentType.SIMPLE
+
+TACTICAL_STRATEGY = 'BASIC'
+
+RISK_TYPE = 0
