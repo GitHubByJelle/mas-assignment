@@ -28,7 +28,7 @@ class Voter:
     def determine_happiness(
         self,
         ranked_candidates_id: np.ndarray,
-        happiness_scheme: HappinessScheme = HappinessScheme.borda_count,
+        happiness_scheme: HappinessScheme,
     ):
         """
         Determine self happiness

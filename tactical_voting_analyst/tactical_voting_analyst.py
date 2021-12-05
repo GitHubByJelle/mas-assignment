@@ -111,7 +111,6 @@ class TacticalVotingAnalyst:
         # print(counter)
 
         # If the user wants to print results
-        # Todo: numpy-ize code bellow: DONE
         if self.print.verbose:
             # Print voting scheme
             self.print(f"Voting Scheme - {voting_scheme}:")
@@ -152,23 +151,23 @@ class TacticalVotingAnalyst:
         # Return the ranked_candidates
         return winners
 
-    def overall_happiness(self, voting_scheme: VotingScheme):
+    def overall_happiness(self, voting_scheme: VotingScheme, happiness_scheme: HappinessScheme):
         return self.__overall_happiness(
-            self.voting_schemes_vectors[voting_scheme]
+            self.voting_schemes_vectors[voting_scheme], happiness_scheme
         )
 
     def __overall_happiness(
-        self, voting_scheme: np.ndarray
+        self, voting_scheme: np.ndarray, happiness_scheme: HappinessScheme
     ):  # by Giulio: I made it private to ease usage
         """
         Determine the overall happiness for each of the voting schemes
         """
-        # ToDO: find most efficient way to do this
         # ranked_candidates_id = np.argsort(-self.get_winner(voting_scheme))
-        ranked_candidates_id = np.argsort(-self.get_winner(voting_scheme))
+        outcome = self.get_winner(voting_scheme)
 
         return sum(  # TODO (by Giulio): consider using average rather than sum
-            voter.determine_happiness(ranked_candidates_id)
+            voter.determine_happiness(voter.outcome_to_ranked_ids(outcome),
+                                      happiness_scheme)
             * (self.__voter_multipliers[tuple(voter.true_preferences)])
             for voter in self.voting_situation.voters
         ) / len(self.voting_situation.voters)
@@ -457,7 +456,7 @@ class TacticalVotingAnalyst:
 
             def determine_happiness(outcome):
                 return sum(
-                    voter.determine_happiness(outcome)
+                    voter.determine_happiness(voter.outcome_to_ranked_ids(outcome), happiness_scheme)
                     for voter in self.voting_situation.voters
                 )
 
@@ -477,22 +476,23 @@ class TacticalVotingAnalyst:
         self, voting_scheme: VotingScheme, happiness_scheme: HappinessScheme
     ):
         """
+        Every tactical option (of every voter) has an impact on the final outcome which can be measured by the difference
+        between the true overall happiness H and the new overall happiness H': diff = H-H'
         :return: the impact is measured as the average of difference between the new happiness and the true happiness for
         each tactical option (for all voters)
         """
 
-        # determine true happiness H
-        true_H = self.overall_happiness(voting_scheme)
+        # determine true happiness H given voting scheme
+        true_H = self.overall_happiness(voting_scheme=voting_scheme, happiness_scheme=happiness_scheme)
 
-        # compute tactical options
-        self.determine_tactical_options(voting_scheme, happiness_scheme)
+        # compute tactical options given happiness
+        self.determine_tactical_options(voting_scheme=voting_scheme, happiness_scheme=happiness_scheme)
 
         # For every tactical option we want to measure the difference in happiness
         # ToDo: we should consider creating a unique overall_happines with the option to input an outcome
         def new_overall_H(outcome):
-            ranked_candidates_id = np.argsort(-outcome)
             return sum(
-                voter.determine_happiness(ranked_candidates_id)
+                voter.determine_happiness(voter.outcome_to_ranked_ids(outcome), happiness_scheme)
                 * (self.__voter_multipliers[tuple(voter.true_preferences)])
                 for voter in self.voting_situation.voters
             ) / len(self.voting_situation.voters)
@@ -504,7 +504,7 @@ class TacticalVotingAnalyst:
             new_H = new_overall_H(pref[3])
             diff += new_H - true_H
 
-        impact = diff / len(self.voting_situation.voters) if diff > 0 else 0
+        impact = diff / len(self.voting_situation.voters)
         return impact
 
     def determine_tactical_options_run_off_election(
