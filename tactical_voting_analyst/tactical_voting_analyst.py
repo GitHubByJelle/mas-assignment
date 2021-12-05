@@ -163,11 +163,11 @@ class TacticalVotingAnalyst:
         Determine the overall happiness for each of the voting schemes
         """
         # ranked_candidates_id = np.argsort(-self.get_winner(voting_scheme))
-        ranked_candidates_id = np.argsort(-self.get_winner(voting_scheme))
+        outcome = self.get_winner(voting_scheme)
 
         return sum(  # TODO (by Giulio): consider using average rather than sum
-            voter.determine_happiness(ranked_candidates_id=ranked_candidates_id,
-                                      happiness_scheme=happiness_scheme)
+            voter.determine_happiness(voter.outcome_to_ranked_ids(outcome),
+                                      happiness_scheme)
             * (self.__voter_multipliers[tuple(voter.true_preferences)])
             for voter in self.voting_situation.voters
         ) / len(self.voting_situation.voters)
@@ -457,7 +457,7 @@ class TacticalVotingAnalyst:
 
             def determine_happiness(outcome):
                 return sum(
-                    voter.determine_happiness(outcome)
+                    voter.determine_happiness(voter.outcome_to_ranked_ids(outcome), happiness_scheme)
                     for voter in self.voting_situation.voters
                 )
 
@@ -492,9 +492,8 @@ class TacticalVotingAnalyst:
         # For every tactical option we want to measure the difference in happiness
         # ToDo: we should consider creating a unique overall_happines with the option to input an outcome
         def new_overall_H(outcome):
-            ranked_candidates_id = np.argsort(-outcome)
             return sum(
-                voter.determine_happiness(ranked_candidates_id)
+                voter.determine_happiness(voter.outcome_to_ranked_ids(outcome), happiness_scheme)
                 * (self.__voter_multipliers[tuple(voter.true_preferences)])
                 for voter in self.voting_situation.voters
             ) / len(self.voting_situation.voters)
