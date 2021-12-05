@@ -44,7 +44,7 @@ def init_voters(
         if distribution_function == DistributionTypes.normal:
             pdf = norm(loc=mean, scale=std).pdf
         elif distribution_function == DistributionTypes.uniform:
-            pdf = lambda x: np.zeros(len(x)) + voters_count / len(xs)
+            pdf = lambda x: np.zeros(len(x)) + 1 / len(xs)
         elif distribution_function == DistributionTypes.two_peaks:
             # TODO:
             n_peaks = 2
@@ -109,7 +109,7 @@ def experiment():
             (
                 distribution_function,
                 tva.overall_happiness(
-                    VotingScheme.borda_count, HappinessScheme.borda_count
+                    VotingScheme.borda_count, HappinessScheme.cubed_weight
                 ),
             )
         )
