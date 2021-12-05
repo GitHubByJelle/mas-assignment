@@ -59,10 +59,6 @@ class Experiment:
         ax = self.create_ax()
         schemes_happiness_risk = {}
         for i, cnames in enumerate(self.candidates_names):
-            # self.voters = [
-            #     Voter(preference)
-            #     for preference in self.preferences[i]
-            # ]
             self.tva = self.TVA(
                 self.candidates[i], cnames, self.preferences[i])
             for vs in self.voting_schemes:
@@ -86,11 +82,12 @@ class Experiment:
             ys, xs = list(
                 zip(*[vs_n[0] for vs_n in schemes_happiness_risk[vs]])
             )
+            xs = self.apply_jitter(xs, multi=True)
             all_x_points += xs
             all_y_points += ys
             annots = [vs_n[1] for vs_n in schemes_happiness_risk[vs]]
             all_annots += annots
-            ax.scatter(self.apply_jitter(xs, multi=True),
+            ax.scatter(xs,
                        ys, label=vs, alpha=0.7)
 
         for i, txt in enumerate(all_annots):
@@ -127,11 +124,12 @@ class Experiment:
             ys, xs = list(
                 zip(*[vs_n[0] for vs_n in schemes_happiness_risk[vs]])
             )
+            xs = self.apply_jitter(xs, multi=True)
             all_x_points += xs
             all_y_points += ys
             annots = [vs_n[1] for vs_n in schemes_happiness_risk[vs]]
             all_annots += annots
-            ax.scatter(self.apply_jitter(xs, multi=True),
+            ax.scatter(xs,
                        ys, label=vs, alpha=0.7)
 
         for i, txt in enumerate(all_annots):
@@ -155,7 +153,8 @@ class Experiment:
             )
         else:
             raise Exception('Invalid tactical strategy')
-        print('=======', vs, scheme_tactical_options)
+        # print('=======', vs, scheme_tactical_options)
+        # _, _, _, new_outcome = scheme_tactical_options[0]
         scheme_risk = self.tva.calculate_risk(
             scheme_tactical_options, vs, self.happiness_scheme, version=self.risk_type)
         scheme_happiness = self.tva.overall_happiness(vs)
@@ -170,7 +169,7 @@ class Experiment:
         return ax
 
     def format_ax(self, ax):
-        # ax.xlim((0, 1))
+        ax.set_xlim((0, 1))
         ax.set_ylim((0, 1))
         ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
         plt.xlabel("Risk")

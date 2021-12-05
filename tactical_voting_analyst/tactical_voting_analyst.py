@@ -438,7 +438,6 @@ class TacticalVotingAnalyst:
     ) -> float:
         risk = 0
         if version == 0:
-            print('*******', tactical_options)
             risk = len(
                 tuple(to for to in tactical_options if len(to) > 0)
             ) / len(tactical_options)

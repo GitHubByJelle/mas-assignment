@@ -39,10 +39,10 @@ VOTING_SCHEMES = [
     VotingScheme.anti_plurality,
 ]
 
-HAPPINESS_SCHEME = HappinessScheme.borda_count
+HAPPINESS_SCHEME = HappinessScheme.linear_weight
 
 EXPERIMENT_TYPE = ExperimentType.INCREASE_VOTERS
 
-TACTICAL_STRATEGY = 'PAIRED'
+TACTICAL_STRATEGY = 'BASIC'
 
-RISK_TYPE = 1
+RISK_TYPE = 2

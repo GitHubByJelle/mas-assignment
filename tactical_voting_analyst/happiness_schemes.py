@@ -5,3 +5,4 @@ class HappinessScheme(IntEnum):
     borda_count = 0
     linear_weight = 1
     squared_weight = 2
+    cubed_weight = 3
