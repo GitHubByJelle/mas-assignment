@@ -57,7 +57,7 @@ def init_voters(
             # Creating the second distribution
             pdf_2 = norm(loc=mean2, scale=sd).pdf
             # prob_dense_2 = norm(loc=mean2, scale=sd)
-            pdf = lambda x: pdf_1(x) + pdf_2(x)
+            pdf = lambda x: (pdf_1(x) + pdf_2(x)) / n_peaks
 
         observations = (pdf(xs) * voters_count).astype(int)
         print(len(observations))
@@ -71,6 +71,7 @@ def init_voters(
             rotation=45,
             ha="right",
         )
+        plt.savefig("../happiness_distribution.png")
         plt.show()
     return permutations, observations.astype(int)
 
