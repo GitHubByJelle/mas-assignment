@@ -28,7 +28,7 @@ class Voter:
     def determine_happiness(
         self,
         ranked_candidates_id: np.ndarray,
-        happiness_scheme: HappinessScheme = HappinessScheme.borda_count,
+        happiness_scheme: HappinessScheme,
     ):
         """
         Determine self happiness
@@ -38,7 +38,7 @@ class Voter:
         """
         true_preferences = self.true_preferences
         pref_norm = np.arange(len(ranked_candidates_id))
-        ranked_norm = np.arange(len(ranked_candidates_id)-1, -1, -1)
+        ranked_norm = np.arange(len(ranked_candidates_id) - 1, -1, -1)
         argsorting = np.arange(len(ranked_candidates_id))
         argsorting[ranked_norm] = argsorting.copy()
         indices = argsorting[pref_norm]
@@ -57,8 +57,8 @@ class Voter:
             happiness = np.dot(
                 borda_weights, borda_weights[indices]
             )  # multiply elementwise ans sum everything up
-            #normalize
-            happiness = happiness/norm_value
+            # normalize
+            happiness = happiness / norm_value
 
         elif happiness_scheme == HappinessScheme.linear_weight:
             linear_weights = np.arange(len(ranked_candidates_id), 0, -1)
@@ -74,7 +74,9 @@ class Voter:
             happiness = 1 - happiness / norm_value
 
         elif happiness_scheme == HappinessScheme.squared_weight:
-            squared_weights = np.square(np.arange(len(ranked_candidates_id), 0, -1))
+            squared_weights = np.square(
+                np.arange(len(ranked_candidates_id), 0, -1)
+            )
             norm_value = np.dot(
                 squared_weights, np.arange(len(pref_norm)) - indices
             )
@@ -139,8 +141,7 @@ class Voter:
 
             # Calculate new happiness
             new_happiness = self.determine_happiness(
-                self.outcome_to_ranked_ids(new_outcome),
-                happiness_scheme,
+                self.outcome_to_ranked_ids(new_outcome), happiness_scheme,
             )
 
             # If it's a better happiness, save

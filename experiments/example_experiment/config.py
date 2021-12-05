@@ -11,9 +11,7 @@ CANDIDATES_NAMES = (
     "D",
 )
 
-CANDIDATES = np.arange(
-    len(CANDIDATES_NAMES)
-)
+CANDIDATES = np.arange(len(CANDIDATES_NAMES))
 
 PREFERENCES = np.array(
     [
@@ -29,11 +27,17 @@ PREFERENCES = np.array(
 
 TVA = TacticalVotingAnalyst
 
-VOTING_SCHEMES = [VotingScheme.borda_count,
-                  VotingScheme.plurality,
-                  VotingScheme.vote_for_two,
-                  VotingScheme.anti_plurality]
+VOTING_SCHEMES = [
+    VotingScheme.borda_count,
+    VotingScheme.plurality,
+    VotingScheme.vote_for_two,
+    VotingScheme.anti_plurality,
+]
 
 HAPPINESS_SCHEME = HappinessScheme.borda_count
 
 EXPERIMENT_TYPE = ExperimentType.SIMPLE
+
+TACTICAL_STRATEGY = 'BASIC'
+
+RISK_TYPE = 0

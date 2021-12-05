@@ -11,8 +11,7 @@ def borda_h_v1(borda, true_preferences, ranked_candidates_id):
     old_happiness = 0
     for i, candidate in enumerate(true_preferences):
         old_happiness += (
-            borda[i]
-            * borda[np.nonzero(ranked_candidates_id == candidate)[0][0]]
+            borda[i] * borda[np.nonzero(ranked_candidates_id == candidate)[0][0]]
         )
     return old_happiness
 
@@ -67,9 +66,7 @@ def get_linear():
     """
 
     ## END OLD
-    assert (
-        old_happiness == happiness
-    ), f"not equal :( {old_happiness} {happiness}"
+    assert old_happiness == happiness, f"not equal :( {old_happiness} {happiness}"
     # print(old_happiness)
     # print(happiness)
     # borda_ranking =
@@ -107,9 +104,7 @@ def get_squared():
     """
 
     ## END OLD
-    assert (
-        old_happiness == happiness
-    ), f"not equal :( {old_happiness} {happiness}"
+    assert old_happiness == happiness, f"not equal :( {old_happiness} {happiness}"
     # print(old_happiness)
     # print(happiness)
     # borda_ranking =

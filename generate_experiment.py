@@ -10,49 +10,53 @@ from experiment import Experiment, ExperimentType
 def generate_experiment(argv: list[str]):
 
     try:
-        opts, _ = getopt.getopt(argv,
-                                shortopts="",
-                                longopts=['exp_folder_name='])
+        opts, _ = getopt.getopt(
+            argv, shortopts="", longopts=["exp_folder_name="])
 
     except getopt.GetoptError as e:
-        print('Error: ', e)
+        print("Error: ", e)
         sys.exit(2)
 
     for opt, arg in opts:
-        if opt not in ('--exp_folder_name'):
-            print('Invalid parameter')
+        if opt not in ("--exp_folder_name"):
+            print("Invalid parameter")
             sys.exit()
-        elif opt == '--exp_folder_name':
+        elif opt == "--exp_folder_name":
             exp_folder = arg
         else:
-            print('Invalid parameter')
+            print("Invalid parameter")
             sys.exit()
 
     # Read experiment config file and load variables
-    exp_path = './experiments/' + exp_folder
+    exp_path = "./experiments/" + exp_folder
     variables = {}
-    exec(open(exp_path + '/config.py').read(), variables)
+    exec(open(exp_path + "/config.py").read(), variables)
 
-    candidates_names = variables['CANDIDATES_NAMES']
-    candidates = variables['CANDIDATES']
-    preferences = variables['PREFERENCES']
+    candidates_names = variables["CANDIDATES_NAMES"]
+    candidates = variables["CANDIDATES"]
+    preferences = variables["PREFERENCES"]
     # voters = [Voter(np.expand_dims(preference, 0))
     #           for preference in preferences]
-    TVA = variables['TVA']
-    voting_schemes = variables['VOTING_SCHEMES']
-    happiness_scheme = variables['HAPPINESS_SCHEME']
-    exp_type = variables['EXPERIMENT_TYPE']
+    TVA = variables["TVA"]
+    voting_schemes = variables["VOTING_SCHEMES"]
+    happiness_scheme = variables["HAPPINESS_SCHEME"]
+    exp_type = variables["EXPERIMENT_TYPE"]
+    tactical_strategy = variables["TACTICAL_STRATEGY"]
+    risk_type = variables["RISK_TYPE"]
 
-    experiment = Experiment(exp_type=exp_type,
-                            exp_path=exp_path,
-                            candidates_names=candidates_names,
-                            candidates=candidates,
-                            preferences=preferences,
-                            # voters=voters,
-                            TVA=TVA,
-                            voting_schemes=voting_schemes,
-                            happiness_scheme=happiness_scheme,
-                            )
+    experiment = Experiment(
+        exp_type=exp_type,
+        exp_path=exp_path,
+        candidates_names=candidates_names,
+        candidates=candidates,
+        preferences=preferences,
+        # voters=voters,
+        TVA=TVA,
+        voting_schemes=voting_schemes,
+        happiness_scheme=happiness_scheme,
+        tactical_strategy=tactical_strategy,
+        risk_type=risk_type
+    )
 
     experiment.run()
 
