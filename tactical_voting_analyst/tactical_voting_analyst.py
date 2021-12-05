@@ -473,14 +473,14 @@ class TacticalVotingAnalyst:
 
         return risk
 
-    def impact_on_all_other_happiness(
+    def impact_overall_happiness(
         self, voting_scheme: VotingScheme, happiness_scheme: HappinessScheme
     ):
         """
         Every tactical option (of every voter) has an impact on the final outcome which can be measured by the difference
         between the true overall happiness H and the new overall happiness H': diff = H-H'
-        :return: the impact is measured as the average of difference between the new happiness and the true happiness for
-        each tactical option (for all voters)
+        :return: the impact is measured as the average (for each voters's best tactical option)
+        of the difference between the new happiness and the true happiness
         """
 
         # determine true happiness H given voting scheme
@@ -489,8 +489,7 @@ class TacticalVotingAnalyst:
         # compute tactical options given happiness
         self.determine_tactical_options(voting_scheme=voting_scheme, happiness_scheme=happiness_scheme)
 
-        # For every tactical option we want to measure the difference in happiness
-        # ToDo: we should consider creating a unique overall_happines with the option to input an outcome
+        # Measure the difference in happiness or every tactical option
         def new_overall_H(outcome):
             return sum(
                 voter.determine_happiness(voter.outcome_to_ranked_ids(outcome), happiness_scheme)
@@ -500,10 +499,11 @@ class TacticalVotingAnalyst:
 
         diff = 0
         for voter in self.voting_situation.voters:
-            pref = voter.tactical_options[0]
-            # compute new overall_happiness H' and diff = H' - H
-            new_H = new_overall_H(pref[3])
-            diff += new_H - true_H
+            if len(voter.tactical_options) > 0:
+                pref = voter.tactical_options[0]
+                # compute new overall_happiness H' and diff = H' - H
+                new_H = new_overall_H(pref[3])
+                diff += new_H - true_H
 
         impact = diff / len(self.voting_situation.voters)
         return impact
