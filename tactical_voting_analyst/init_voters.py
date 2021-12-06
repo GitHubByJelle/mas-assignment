@@ -98,7 +98,6 @@ def test():
         plot=True,
         stochastic=False,
     )
-    ipdb.set_trace()
     print(preferences)
     print(voter_counts)
 
