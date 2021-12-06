@@ -13,13 +13,6 @@ class VotingSituation:  # TODO: do we really need this class?
         self.candidate_names = np.array(candidate_names)
         self.voters = voters
 
-    # Functions that could be created
-    def add_voter(self):
-        pass
-
-    def add_candidate(self):
-        pass
-
     def get_all_preferences(self) -> list[tuple]:
         """
         Get all preferences from all voters
@@ -171,5 +164,9 @@ class VotingSituation:  # TODO: do we really need this class?
                 # Add the majority table to the big majority table
                 majority_table += self.determine_majority_table_pref(temp_preference)
 
-        # Return normalized majority table
-        return majority_table / np.sum([len(x) for x in tactical_options])
+        # Return normalized majority table if any tactical options
+        if np.sum([len(x) for x in tactical_options]) > 0:
+            return majority_table / np.sum([len(x) for x in tactical_options])
+        # Return original majority table
+        else:
+            return self.determine_majority_table()

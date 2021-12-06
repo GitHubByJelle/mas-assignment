@@ -1,0 +1,80 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 500px;
+            height: 500px;
+            background-color: #ffffff;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+
+        
+
+        
+
+        
+</style>
+
+</head>
+
+<body>
+<div id = "mynetwork"></div>
+
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"id": 0, "label": "1", "shape": "dot"}, {"id": 1, "label": "2", "shape": "dot"}, {"id": 2, "label": "3", "shape": "dot"}, {"id": 3, "label": "4", "shape": "dot"}, {"id": 4, "label": "5", "shape": "dot"}, {"id": 5, "label": "6", "shape": "dot"}, {"id": 6, "label": "7", "shape": "dot"}, {"id": 7, "label": "8", "shape": "dot"}]);
+        edges = new vis.DataSet([{"arrows": "to", "from": 1, "to": 0, "width": 3.0}, {"arrows": "to", "from": 0, "to": 2, "width": 3.0}, {"arrows": "to", "from": 0, "to": 3, "width": 3.0}, {"arrows": "to", "from": 0, "to": 4, "width": 0.5182839044054133}, {"arrows": "to", "from": 4, "to": 0, "width": 2.481716095594587}, {"arrows": "to", "from": 0, "to": 5, "width": 0.3265188597754103}, {"arrows": "to", "from": 5, "to": 0, "width": 2.6734811402245895}, {"arrows": "to", "from": 0, "to": 6, "width": 0.313561762165275}, {"arrows": "to", "from": 6, "to": 0, "width": 2.686438237834725}, {"arrows": "to", "from": 7, "to": 0, "width": 3.0}, {"arrows": "to", "from": 1, "to": 2, "width": 3.0}, {"arrows": "to", "from": 1, "to": 3, "width": 3.0}, {"arrows": "to", "from": 1, "to": 4, "width": 3.0}, {"arrows": "to", "from": 1, "to": 5, "width": 3.0}, {"arrows": "to", "from": 1, "to": 6, "width": 3.0}, {"arrows": "to", "from": 1, "to": 7, "width": 0.6438237834725021}, {"arrows": "to", "from": 7, "to": 1, "width": 2.3561762165274978}, {"arrows": "to", "from": 2, "to": 3, "width": 2.4336308666858626}, {"arrows": "to", "from": 3, "to": 2, "width": 0.5663691333141376}, {"arrows": "to", "from": 4, "to": 2, "width": 3.0}, {"arrows": "to", "from": 2, "to": 5, "width": 0.36567808810826374}, {"arrows": "to", "from": 5, "to": 2, "width": 2.6343219118917363}, {"arrows": "to", "from": 2, "to": 6, "width": 2.4382378347250215}, {"arrows": "to", "from": 6, "to": 2, "width": 0.5617621652749784}, {"arrows": "to", "from": 7, "to": 2, "width": 3.0}, {"arrows": "to", "from": 4, "to": 3, "width": 3.0}, {"arrows": "to", "from": 5, "to": 3, "width": 3.0}, {"arrows": "to", "from": 6, "to": 3, "width": 3.0}, {"arrows": "to", "from": 7, "to": 3, "width": 3.0}, {"arrows": "to", "from": 4, "to": 5, "width": 0.4920817736826951}, {"arrows": "to", "from": 5, "to": 4, "width": 2.507918226317305}, {"arrows": "to", "from": 4, "to": 6, "width": 3.0}, {"arrows": "to", "from": 4, "to": 7, "width": 0.5133890008638065}, {"arrows": "to", "from": 7, "to": 4, "width": 2.4866109991361935}, {"arrows": "to", "from": 5, "to": 6, "width": 2.602936942124964}, {"arrows": "to", "from": 6, "to": 5, "width": 0.397063057875036}, {"arrows": "to", "from": 7, "to": 5, "width": 3.0}, {"arrows": "to", "from": 6, "to": 7, "width": 0.6576446875899798}, {"arrows": "to", "from": 7, "to": 6, "width": 2.34235531241002}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {"nodes": {"color": {"border": "rgba(0,0,0,1)", "background": "rgba(255,255,255,1)", "highlight": {"border": "rgba(0,0,0,1)", "background": "rgba(208,208,208,1)"}}, "font": {"strokeWidth": 5}}, "edges": {"color": {"color": "rgba(0,0,0,1)", "highlight": "rgba(0,0,0,1)", "hover": "rgba(0,0,0,1)", "inherit": false}, "smooth": {"type": "continuous", "forceDirection": "none"}}, "physics": {"forceAtlas2Based": {"gravitationalConstant": -82, "centralGravity": 0.015, "springLength": 125, "springConstant": 0.155, "damping": 0.39, "avoidOverlap": 0.18}, "maxVelocity": 42, "minVelocity": 0.6, "solver": "forceAtlas2Based"}};
+        
+        
+
+        
+
+        network = new vis.Network(container, data, options);
+	 
+        
+
+
+        
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>

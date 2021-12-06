@@ -1,0 +1,80 @@
+<html>
+<head>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis.css" type="text/css" />
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.16.1/vis-network.min.js"> </script>
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+
+<style type="text/css">
+
+        #mynetwork {
+            width: 500px;
+            height: 500px;
+            background-color: #ffffff;
+            border: 1px solid lightgray;
+            position: relative;
+            float: left;
+        }
+
+        
+
+        
+
+        
+</style>
+
+</head>
+
+<body>
+<div id = "mynetwork"></div>
+
+
+<script type="text/javascript">
+
+    // initialize global variables.
+    var edges;
+    var nodes;
+    var network; 
+    var container;
+    var options, data;
+
+    
+    // This method is responsible for drawing the graph, returns the drawn network
+    function drawGraph() {
+        var container = document.getElementById('mynetwork');
+        
+        
+
+        // parsing and collecting nodes and edges from the python
+        nodes = new vis.DataSet([{"id": 0, "label": "1", "shape": "dot"}, {"id": 1, "label": "2", "shape": "dot"}, {"id": 2, "label": "3", "shape": "dot"}, {"id": 3, "label": "4", "shape": "dot"}, {"id": 4, "label": "5", "shape": "dot"}, {"id": 5, "label": "6", "shape": "dot"}, {"id": 6, "label": "7", "shape": "dot"}, {"id": 7, "label": "8", "shape": "dot"}]);
+        edges = new vis.DataSet([{"arrows": "to", "from": 0, "to": 1, "width": 3.0}, {"arrows": "to", "from": 0, "to": 2, "width": 2.917498048061074}, {"arrows": "to", "from": 2, "to": 0, "width": 0.08250195193892601}, {"arrows": "to", "from": 0, "to": 3, "width": 2.6265290188253667}, {"arrows": "to", "from": 3, "to": 0, "width": 0.37347098117463345}, {"arrows": "to", "from": 0, "to": 4, "width": 3.0}, {"arrows": "to", "from": 0, "to": 5, "width": 2.6616639194933636}, {"arrows": "to", "from": 5, "to": 0, "width": 0.3383360805066366}, {"arrows": "to", "from": 0, "to": 6, "width": 3.0}, {"arrows": "to", "from": 0, "to": 7, "width": 2.488331742864579}, {"arrows": "to", "from": 7, "to": 0, "width": 0.5116682571354212}, {"arrows": "to", "from": 1, "to": 2, "width": 2.2926173332176627}, {"arrows": "to", "from": 2, "to": 1, "width": 0.7073826667823371}, {"arrows": "to", "from": 1, "to": 3, "width": 3.0}, {"arrows": "to", "from": 1, "to": 4, "width": 0.00884878979786588}, {"arrows": "to", "from": 4, "to": 1, "width": 2.9911512102021343}, {"arrows": "to", "from": 1, "to": 5, "width": 2.6705127092912293}, {"arrows": "to", "from": 5, "to": 1, "width": 0.3294872907087707}, {"arrows": "to", "from": 1, "to": 6, "width": 2.264769671206732}, {"arrows": "to", "from": 6, "to": 1, "width": 0.735230328793268}, {"arrows": "to", "from": 1, "to": 7, "width": 0.3997570920447645}, {"arrows": "to", "from": 7, "to": 1, "width": 2.6002429079552356}, {"arrows": "to", "from": 2, "to": 3, "width": 1.9584453890864926}, {"arrows": "to", "from": 3, "to": 2, "width": 1.0415546109135074}, {"arrows": "to", "from": 4, "to": 2, "width": 3.0}, {"arrows": "to", "from": 2, "to": 5, "width": 2.3267111997917933}, {"arrows": "to", "from": 5, "to": 2, "width": 0.6732888002082068}, {"arrows": "to", "from": 2, "to": 6, "width": 3.0}, {"arrows": "to", "from": 2, "to": 7, "width": 0.21497354038344757}, {"arrows": "to", "from": 7, "to": 2, "width": 2.7850264596165526}, {"arrows": "to", "from": 3, "to": 4, "width": 0.5004771406263555}, {"arrows": "to", "from": 4, "to": 3, "width": 2.4995228593736445}, {"arrows": "to", "from": 5, "to": 3, "width": 3.0}, {"arrows": "to", "from": 3, "to": 6, "width": 2.1442699748416763}, {"arrows": "to", "from": 6, "to": 3, "width": 0.855730025158324}, {"arrows": "to", "from": 3, "to": 7, "width": 0.6805760388652728}, {"arrows": "to", "from": 7, "to": 3, "width": 2.319423961134727}, {"arrows": "to", "from": 4, "to": 5, "width": 1.961047974321159}, {"arrows": "to", "from": 5, "to": 4, "width": 1.038952025678841}, {"arrows": "to", "from": 4, "to": 6, "width": 3.0}, {"arrows": "to", "from": 4, "to": 7, "width": 3.0}, {"arrows": "to", "from": 5, "to": 6, "width": 1.8392469853387698}, {"arrows": "to", "from": 6, "to": 5, "width": 1.1607530146612302}, {"arrows": "to", "from": 5, "to": 7, "width": 2.3207252537520606}, {"arrows": "to", "from": 7, "to": 5, "width": 0.6792747462479396}, {"arrows": "to", "from": 7, "to": 6, "width": 3.0}]);
+
+        // adding nodes and edges to the graph
+        data = {nodes: nodes, edges: edges};
+
+        var options = {"nodes": {"color": {"border": "rgba(0,0,0,1)", "background": "rgba(255,255,255,1)", "highlight": {"border": "rgba(0,0,0,1)", "background": "rgba(208,208,208,1)"}}, "font": {"strokeWidth": 5}}, "edges": {"color": {"color": "rgba(0,0,0,1)", "highlight": "rgba(0,0,0,1)", "hover": "rgba(0,0,0,1)", "inherit": false}, "smooth": {"type": "continuous", "forceDirection": "none"}}, "physics": {"forceAtlas2Based": {"gravitationalConstant": -82, "centralGravity": 0.015, "springLength": 125, "springConstant": 0.155, "damping": 0.39, "avoidOverlap": 0.18}, "maxVelocity": 42, "minVelocity": 0.6, "solver": "forceAtlas2Based"}};
+        
+        
+
+        
+
+        network = new vis.Network(container, data, options);
+	 
+        
+
+
+        
+
+        return network;
+
+    }
+
+    drawGraph();
+
+</script>
+</body>
+</html>
