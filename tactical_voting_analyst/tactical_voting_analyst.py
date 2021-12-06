@@ -452,23 +452,21 @@ class TacticalVotingAnalyst:
                     number_candidates
                 )
             risk = x / len(tactical_options)
+
         elif version == 3:
-
-            def determine_happiness(outcome):
-                return sum(
-                    voter.determine_happiness(voter.outcome_to_ranked_ids(outcome), happiness_scheme)
-                    for voter in self.voting_situation.voters
-                )
-
-            def x(tactical_option):
-                return self.overall_happiness(
-                    voting_scheme
-                ) - determine_happiness(tactical_option)
-
-            # outcome = self.get_winner(self.voting_schemes[voting_scheme])
-            risk = sum(x(to) for to in tactical_options) / len(
-                tactical_options
-            )
+            true_H = self.overall_happiness(voting_scheme,happiness_scheme)
+            diff = 0
+            for voter in self.voting_situation.voters:
+                pref = voter.tactical_options[0]
+                new_H = pref[2]
+                diff += new_H - true_H
+            """
+            risk = sum(
+                v.tactical_options[0][2] - true_H
+                for v in self.voting_situation.voters
+            ) / len(self.voting_situation.voters)
+            """
+            risk = diff / len(self.voting_situation.voters)
 
         return risk
 

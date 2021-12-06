@@ -31,6 +31,20 @@ def main():
     # Create TVA
     TVA = TacticalVotingAnalyst(candidates, candidates_names, preferences)
     print("\n", TVA.get_winner(np.array([3.0, 2.0, 1.0, 0.0])))
+    tactical_options = TVA.determine_tactical_options(
+        VotingScheme.borda_count, HappinessScheme.borda_count
+    )
+    risks = [
+        TVA.calculate_risk(
+            tactical_options,
+            VotingScheme.borda_count,
+            HappinessScheme.borda_count,
+            version=i,
+        )
+        for i in range(3)
+    ]
+    print(f"The risk is :{risks}")
+
     # print(TVA.overall_happiness())
     # TVA.determine_tactical_options(
     #     VotingScheme.borda_count, HappinessScheme.borda_count
@@ -42,7 +56,7 @@ def main():
     # TVA.voting_situation.get_impact_tactical_options_majority_table(TVA.determine_tactical_options(
     #     VotingScheme.borda_count, HappinessScheme.borda_count
     # ))
-
+    """
     for i, t_opts in enumerate(
         TVA.determine_tactical_options_run_off_election(
             np.array(preferences), HappinessScheme.borda_count
@@ -52,7 +66,7 @@ def main():
         for t_opt in t_opts:
             print(t_opt)
         print()
-
+    """
     # TVA.voting_situation.create_majority_graph_preferences(TVA.voting_situation.determine_majority_table())
     # TVA.voting_situation.create_majority_graph_preferences(
     #     TVA.voting_situation.get_impact_tactical_options_majority_table(
