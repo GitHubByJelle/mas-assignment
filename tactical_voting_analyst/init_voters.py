@@ -15,70 +15,40 @@ class DistributionTypes(Enum):
     two_peaks = "two_peaks"
 
 
-def descrete_norm(max_val: int, var: float, sample_size: int):
-    x = np.arange(-round(max_val / 2), round(max_val / 2))
-    shift = max_val * 0.05
-    xU, xL = x + shift, x - shift
-    prob = norm.cdf(xU, scale=var) - norm.cdf(xL, scale=var)
-    prob /= prob.sum()  # normalize the probabilities so their sum is 1
-    observations = np.random.choice(
-        np.arange(max_val), size=sample_size, p=prob
-    )
-    new_observations = np.zeros(max_val, dtype=int)
-    for o in observations:
-        new_observations[o] += 1
-    return prob, new_observations
-
-
 def init_voters(
     candidates: tuple[str, ...],
     voters_count: int = 1000,
     distribution_function: DistributionTypes = DistributionTypes.normal,
-    stochastic=False,
     plot=False,
-) -> tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, np.ndarray, tuple[tuple[str, ...]]]:
     permutations = np.array(tuple(itertools.permutations(candidates)))
     np.random.shuffle(permutations)
     xs = np.arange(len(permutations))
     std = len(permutations) / 8
     mean = len(permutations) / 2
     observations = np.array(np.zeros(len(permutations), dtype=int))
-    if stochastic:
-        print(f"{permutations=}")
-        if distribution_function == "normal":
-            done = 0
-            while done < voters_count:
-                i = np.random.normal(mean, std)
-                if i >= 0 and i <= len(permutations) - 1:
-                    done += 1
-                    observations[int(i)] += 1
-    else:
-        pdf = lambda x: x
-        if distribution_function == DistributionTypes.normal:
-            # pdf = norm(loc=mean, scale=std).pdf
-            _, observations = descrete_norm(len(xs), std, voters_count)
+    probs = lambda x: x
+    if distribution_function == DistributionTypes.normal:
+        probs = norm(loc=mean, scale=std).pdf(xs)
+        probs /= probs.sum()
+    elif distribution_function == DistributionTypes.uniform:
+        probs = np.zeros(len(xs)) + 1 / len(permutations)
+    elif distribution_function == DistributionTypes.two_peaks:
+        n_peaks = 2
+        mean = len(permutations) / (n_peaks + 1)
+        mean2 = 2 * (len(permutations) / (n_peaks + 1))
+        sd = (len(permutations) / 2) / (3 * n_peaks)
+        pdf_1 = norm(loc=mean, scale=sd).pdf
+        pdf_2 = norm(loc=mean2, scale=sd).pdf
+        probs = pdf_1(xs) + pdf_2(xs)
+        probs /= probs.sum()
 
-        elif distribution_function == DistributionTypes.uniform:
-            pdf = lambda x: np.zeros(len(x)) + 1 / len(xs)
-        elif distribution_function == DistributionTypes.two_peaks:
-            n_peaks = 2
-            mean = len(permutations) / (n_peaks + 1)
-            mean2 = 2 * (len(permutations) / (n_peaks + 1))
-            sd = (len(permutations) / 2) / (3 * n_peaks)
-            pdf_1 = norm(loc=mean, scale=sd).pdf
-            # prob_dense = norm(loc=mean, scale=sd)
-
-            # Creating the second distribution
-            pdf_2 = norm(loc=mean2, scale=sd).pdf
-            # prob_dense_2 = norm(loc=mean2, scale=sd)
-            pdf = lambda x: (pdf_1(x) + pdf_2(x)) / n_peaks
-
-        # observations = pdf(xs)  # * voters_count).astype(int)
-        # print(len(observations))
-        # print(observations)
-
+    observations = np.random.choice(xs, size=voters_count, p=probs)
+    frequencies = np.zeros(len(permutations), dtype=int)
+    for o in observations:
+        frequencies[o] += 1
     if plot:
-        plt.scatter(np.arange(len(observations)), observations)
+        plt.scatter(np.arange(len(frequencies)), frequencies)
         plt.xticks(
             np.arange(len(permutations)),
             tuple(f'{" ".join(p)}' for p in permutations),
@@ -87,17 +57,19 @@ def init_voters(
         )
         plt.savefig("../happiness_distribution.png")
         plt.show()
-    return permutations, observations.astype(int)
+    named_observations = tuple(tuple(permutations[o]) for o in observations)
+    return permutations, frequencies, named_observations
 
 
 def test():
-    preferences, voter_counts = init_voters(
+    voters_count = 200
+    preferences, voter_counts, observations = init_voters(
         ("A", "B", "C", "D"),
-        distribution_function=DistributionTypes.normal,
-        voters_count=30,
+        distribution_function=DistributionTypes.two_peaks,
+        voters_count=voters_count,
         plot=True,
-        stochastic=False,
     )
+    assert voter_counts.sum() == voters_count, "not correct"
     print(preferences)
     print(voter_counts)
 
