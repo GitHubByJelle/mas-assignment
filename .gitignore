@@ -9,7 +9,7 @@ __pycache__/
 # Editors
 
 .idea/
-
+.DS_Store
 # Distribution / packaging
 .Python
 build/
