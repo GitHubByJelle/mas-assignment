@@ -477,8 +477,8 @@ class TacticalVotingAnalyst:
     ):
         """
         Every tactical option (of every voter) has an impact on the final outcome which can be measured by the difference
-        between the true overall happiness H and the new overall happiness H': diff = H-H'
-        :return: the impact is measured as the average (for each voters's best tactical option)
+        between the true overall happiness H and the new overall happiness H': diff = H-H'.
+        :returns: the impact is measured as the average (for each voters's best tactical option)
         of the difference between the new happiness and the true happiness
         """
 
