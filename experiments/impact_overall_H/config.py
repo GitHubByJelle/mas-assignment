@@ -5,11 +5,12 @@ from tactical_voting_analyst.voting_schemes import VotingScheme
 from tactical_voting_analyst.happiness_schemes import HappinessScheme
 from experiment import ExperimentType
 
-# plt.savefig('netscore.png')
-
+########### CONFIG ###########
 HAPPINESS_SCHEME = HappinessScheme.cubed_weight
 EXPERIMENT_TYPE = ExperimentType.INCREASE_VOTERS
+##############################
 
+EXPERIMENT_NAME = 'Impact Overall Happiness, ' + EXPERIMENT_TYPE.name
 labels = ('plurality', 'vote_for_two', 'borda_count', 'anti_plurality')
 y_pos = np.arange(len(labels))
 fig, ax = plt.subplots(figsize=(10, 5))
@@ -72,11 +73,10 @@ if EXPERIMENT_TYPE == ExperimentType.INCREASE_CANDIDATES:
                         verticalalignment='bottom', size=10)
         ax.set_yticks(y_pos + width, labels=labels)
         ax.invert_yaxis()
-        ax.set_xlabel('Impact')
-        ax.set_title('Impact Overall Happiness, ' + EXPERIMENT_TYPE.name)
+    ax.set_xlabel('Impact')
+    ax.set_title(EXPERIMENT_NAME)
     ax.legend()
     ax.axvline(0, color='k', linewidth=1)
-    plt.show()
 
 
 elif EXPERIMENT_TYPE == ExperimentType.INCREASE_VOTERS:
@@ -128,8 +128,10 @@ elif EXPERIMENT_TYPE == ExperimentType.INCREASE_VOTERS:
                         verticalalignment='bottom', size=10)
         ax.set_yticks(y_pos + width, labels=labels)
         ax.invert_yaxis()
-        ax.set_xlabel('Impact')
-        ax.set_title('Impact Overall Happiness, ' + EXPERIMENT_TYPE.name)
+    ax.set_xlabel('Impact')
+    ax.set_title(EXPERIMENT_NAME)
     ax.legend()
     ax.axvline(0, color='k', linewidth=1)
-    plt.show()
+
+# plt.show()
+plt.savefig(EXPERIMENT_TYPE.name + '.png')
