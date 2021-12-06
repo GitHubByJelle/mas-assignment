@@ -151,7 +151,9 @@ class TacticalVotingAnalyst:
         # Return the ranked_candidates
         return winners
 
-    def overall_happiness(self, voting_scheme: VotingScheme, happiness_scheme: HappinessScheme):
+    def overall_happiness(
+        self, voting_scheme: VotingScheme, happiness_scheme: HappinessScheme
+    ):
         return self.__overall_happiness(
             self.voting_schemes_vectors[voting_scheme], happiness_scheme
         )
@@ -166,8 +168,9 @@ class TacticalVotingAnalyst:
         outcome = self.get_winner(voting_scheme)
 
         return sum(  # TODO (by Giulio): consider using average rather than sum
-            voter.determine_happiness(voter.outcome_to_ranked_ids(outcome),
-                                      happiness_scheme)
+            voter.determine_happiness(
+                voter.outcome_to_ranked_ids(outcome), happiness_scheme
+            )
             * (self.__voter_multipliers[tuple(voter.true_preferences)])
             for voter in self.voting_situation.voters
         ) / len(self.voting_situation.voters)
@@ -453,13 +456,15 @@ class TacticalVotingAnalyst:
                 )
             risk = x / len(tactical_options)
 
-        elif version == 3:
-            true_H = self.overall_happiness(voting_scheme,happiness_scheme)
+        elif version == 2:
+            true_H = self.overall_happiness(voting_scheme, happiness_scheme)
             diff = 0
+
             for voter in self.voting_situation.voters:
-                pref = voter.tactical_options[0]
-                new_H = pref[2]
-                diff += new_H - true_H
+                if len(voter.tactical_options) > 0:
+                    pref = voter.tactical_options[0]
+                    new_H = pref[2]
+                    diff += new_H - true_H
             """
             risk = sum(
                 v.tactical_options[0][2] - true_H
@@ -481,15 +486,21 @@ class TacticalVotingAnalyst:
         """
 
         # determine true happiness H given voting scheme
-        true_H = self.overall_happiness(voting_scheme=voting_scheme, happiness_scheme=happiness_scheme)
+        true_H = self.overall_happiness(
+            voting_scheme=voting_scheme, happiness_scheme=happiness_scheme
+        )
 
         # compute tactical options given happiness
-        self.determine_tactical_options(voting_scheme=voting_scheme, happiness_scheme=happiness_scheme)
+        self.determine_tactical_options(
+            voting_scheme=voting_scheme, happiness_scheme=happiness_scheme
+        )
 
         # Measure the difference in happiness or every tactical option
         def new_overall_H(outcome):
             return sum(
-                voter.determine_happiness(voter.outcome_to_ranked_ids(outcome), happiness_scheme)
+                voter.determine_happiness(
+                    voter.outcome_to_ranked_ids(outcome), happiness_scheme
+                )
                 * (self.__voter_multipliers[tuple(voter.true_preferences)])
                 for voter in self.voting_situation.voters
             ) / len(self.voting_situation.voters)

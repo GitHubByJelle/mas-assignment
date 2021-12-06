@@ -8,13 +8,26 @@ from .tactical_voting_analyst import HappinessScheme
 from .tactical_voting_analyst import TacticalVotingAnalyst as TVA
 import ipdb
 
-# TODO: design an experiment for this
-
 
 class DistributionTypes(Enum):
     normal = "normal"
     uniform = "uniform"
     two_peaks = "two_peaks"
+
+
+def descrete_norm(max_val: int, var: float, sample_size: int):
+    x = np.arange(-round(max_val / 2), round(max_val / 2))
+    shift = max_val * 0.05
+    xU, xL = x + shift, x - shift
+    prob = norm.cdf(xU, scale=var) - norm.cdf(xL, scale=var)
+    prob /= prob.sum()  # normalize the probabilities so their sum is 1
+    observations = np.random.choice(
+        np.arange(max_val), size=sample_size, p=prob
+    )
+    new_observations = np.zeros(max_val, dtype=int)
+    for o in observations:
+        new_observations[o] += 1
+    return prob, new_observations
 
 
 def init_voters(
@@ -42,11 +55,12 @@ def init_voters(
     else:
         pdf = lambda x: x
         if distribution_function == DistributionTypes.normal:
-            pdf = norm(loc=mean, scale=std).pdf
+            # pdf = norm(loc=mean, scale=std).pdf
+            _, observations = descrete_norm(len(xs), std, voters_count)
+
         elif distribution_function == DistributionTypes.uniform:
             pdf = lambda x: np.zeros(len(x)) + 1 / len(xs)
         elif distribution_function == DistributionTypes.two_peaks:
-            # TODO:
             n_peaks = 2
             mean = len(permutations) / (n_peaks + 1)
             mean2 = 2 * (len(permutations) / (n_peaks + 1))
@@ -59,9 +73,9 @@ def init_voters(
             # prob_dense_2 = norm(loc=mean2, scale=sd)
             pdf = lambda x: (pdf_1(x) + pdf_2(x)) / n_peaks
 
-        observations = (pdf(xs) * voters_count).astype(int)
-        print(len(observations))
-        print(observations)
+        # observations = pdf(xs)  # * voters_count).astype(int)
+        # print(len(observations))
+        # print(observations)
 
     if plot:
         plt.scatter(np.arange(len(observations)), observations)
@@ -79,48 +93,63 @@ def init_voters(
 def test():
     preferences, voter_counts = init_voters(
         ("A", "B", "C", "D"),
-        distribution_function=DistributionTypes.uniform,
+        distribution_function=DistributionTypes.normal,
+        voters_count=30,
         plot=True,
+        stochastic=False,
     )
+    ipdb.set_trace()
     print(preferences)
     print(voter_counts)
 
 
 def experiment():
     candidates = ("A", "B", "C", "D")
-    happinesses = []
-    for distribution_function in DistributionTypes:
-        preferences, voter_counts = init_voters(
-            candidates, distribution_function=distribution_function
-        )
-        proto_preferences = tuple(
-            v * (tuple(candidates.index(c) for c in p),)
-            for p, v in zip(preferences, voter_counts)
-        )
-        new_preferences: list[tuple[int, ...]] = []
-        for ps in proto_preferences:
-            new_preferences.extend(ps)
-        tva = TVA(
-            candidates=np.arange(len(candidates)),
-            candidate_names=candidates,
-            preferences=tuple(new_preferences),
-        )
-        happinesses.append(
-            (
-                distribution_function,
-                tva.overall_happiness(
-                    VotingScheme.borda_count, HappinessScheme.cubed_weight
-                ),
+    happinesses = np.zeros(len(DistributionTypes))
+    count = 1000
+    for _ in range(count):
+        for i, distribution_function in enumerate(DistributionTypes):
+            preferences, voter_counts = init_voters(
+                candidates, distribution_function=distribution_function
             )
-        )
-        print(f"{distribution_function} Happiness:{happinesses[-1][1]}")
+            proto_preferences = tuple(
+                v * (tuple(candidates.index(c) for c in p),)
+                for p, v in zip(preferences, voter_counts)
+            )
+            new_preferences: list[tuple[int, ...]] = []
+            for ps in proto_preferences:
+                new_preferences.extend(ps)
+            tva = TVA(
+                candidates=np.arange(len(candidates)),
+                candidate_names=candidates,
+                preferences=tuple(new_preferences),
+                verbose=False,
+            )
+            tva.get_winner(VotingScheme.borda_count)
+            try:
+                happinesses[i] += tva.overall_happiness(
+                    VotingScheme.borda_count, HappinessScheme.cubed_weight
+                )
+            except:
+                ipdb.set_trace()
+            tactical_options = tva.determine_tactical_options(
+                VotingScheme.borda_count, HappinessScheme.cubed_weight
+            )
+            for i in range(3):
+                print(
+                    f"{tva.calculate_risk(tactical_options, VotingScheme.borda_count, HappinessScheme.cubed_weight, i)=}"
+                )
+
+            # print(f"{distribution_function} Happiness:{happinesses[-1][1]}")
+    happinesses /= count
     plt.bar(
         np.arange(len(happinesses)),
-        [h[1] for h in happinesses],
-        tick_label=[h[0] for h in happinesses],
+        happinesses,
+        tick_label=[ds for ds in DistributionTypes],
     )
     plt.show()
 
 
 if __name__ == "__main__":
-    experiment()
+    # experiment()
+    test()
