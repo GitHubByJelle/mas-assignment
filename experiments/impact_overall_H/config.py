@@ -1,137 +1,138 @@
+from enum import Enum
+
 import numpy as np
 import matplotlib.pyplot as plt
 from tactical_voting_analyst.tactical_voting_analyst import TacticalVotingAnalyst
 from tactical_voting_analyst.voting_schemes import VotingScheme
 from tactical_voting_analyst.happiness_schemes import HappinessScheme
 from experiment import ExperimentType
+from tactical_voting_analyst.init_voters import init_voters, DistributionTypes
+from tqdm import tqdm
+
 
 ########### CONFIG ###########
 HAPPINESS_SCHEME = HappinessScheme.cubed_weight
-EXPERIMENT_TYPE = ExperimentType.INCREASE_VOTERS
+DISTRIBUTION_F = DistributionTypes.normal
+CANDIDATES_NAMES = (("A", "B", "C"), ("A", "B", "C", "D"), ("A", "B", "C", "D", "E"))
+VOTERS = [10, 16, 24]
 ##############################
 
-EXPERIMENT_NAME = 'Impact Overall Happiness, ' + EXPERIMENT_TYPE.name
-labels = ('plurality', 'vote_for_two', 'borda_count', 'anti_plurality')
-y_pos = np.arange(len(labels))
-fig, ax = plt.subplots(figsize=(10, 5))
-width = 0.2
+IMAGE_ID = 2
 
-if EXPERIMENT_TYPE == ExperimentType.INCREASE_CANDIDATES:
 
-    CANDIDATES_NAMES = (("A", "B", "C"), ("A", "B", "C", "D"),
-                        ("A", "B", "C", "D", "E"))
+def get_impact(candidates, preferences):
+    TVA = TacticalVotingAnalyst(candidates=np.arange(len(candidates)),
+                                candidate_names=candidates,
+                                preferences=preferences)
+    impact = []
+    for V_scheme in VotingScheme:
+        impact.append(TVA.impact_overall_happiness(voting_scheme=V_scheme,
+                                                   happiness_scheme=HAPPINESS_SCHEME))
+    impact = [x * 100 for x in impact]
+    return impact
 
-    CANDIDATES = [np.arange(len(c)) for c in CANDIDATES_NAMES]
 
-    PREFERENCES = (
-        np.array(
-            [[0, 1, 2], [1, 2, 0], [2, 0, 1], [0, 1, 2],
-             [1, 2, 0], [2, 0, 1], [0, 1, 2], ]
-        ),
-        np.array(
-            [
-                [0, 1, 2, 3],
-                [1, 2, 3, 0],
-                [2, 3, 0, 1],
-                [0, 1, 2, 3],
-                [1, 2, 3, 0],
-                [2, 3, 0, 1],
-                [0, 1, 2, 3],
-            ]
-        ),
-        np.array(
-            [
-                [0, 1, 2, 3, 4],
-                [1, 2, 3, 4, 0],
-                [2, 3, 4, 0, 1],
-                [0, 1, 2, 3, 4],
-                [1, 2, 3, 4, 0],
-                [2, 3, 4, 0, 1],
-                [0, 1, 2, 3, 4],
-            ]
-        ),
+def get_preferences(candidates, n_voters):
+    preferences, voter_counts, observations = init_voters(
+        candidates,
+        distribution_function=DISTRIBUTION_F,
+        voters_count=n_voters,
+        plot=False,
     )
-    for i in range(len(CANDIDATES)):
-        n_candidates = len(CANDIDATES[i])
-        n_voters = len(PREFERENCES[i])
-        print("********************")
-        print(str(n_candidates) + ' candidates')
-        TVA = TacticalVotingAnalyst(CANDIDATES[i], CANDIDATES_NAMES[i], PREFERENCES[i])
-        impact = []
-        for V_scheme in VotingScheme:
-            impact.append(TVA.impact_overall_happiness(voting_scheme=V_scheme,
-                                                       happiness_scheme=HAPPINESS_SCHEME))
-        impact = [x * 100 for x in impact]
+    new_preferences = []
+    for voter in list(observations):
+        a = []
+        for ch in voter:
+            id = 0
+            if ch == 'B': id = 1
+            elif ch == 'C': id = 2
+            elif ch == 'D': id = 3
+            a.append(id)
+        new_preferences.append(a)
+    return np.array(new_preferences)
+
+
+def increase_candidates():
+    print(ExperimentType.INCREASE_CANDIDATES)
+    episodes = []
+    for i, candidates in enumerate(CANDIDATES_NAMES):
+        not_important_list = []
+        print("*******************")
+        for j in tqdm(range(1000), desc="Increase candidates"):
+            preferences = get_preferences(candidates, VOTERS[0])
+            not_important_list.append(get_impact(candidates, preferences))
+        impact = np.average(not_important_list, axis=0)
+        episodes.append(impact)
+        print("Candidates: ", candidates)
+        print("# voters: ", str(VOTERS[0]))
+        print("Impact: ", impact)
+
+    plot_bars(episodes, ExperimentType.INCREASE_CANDIDATES)
+
+
+def increase_voters():
+    print(ExperimentType.INCREASE_VOTERS)
+    episodes = []
+    candidates = CANDIDATES_NAMES[1]
+    for i in range(3):
+        not_important_list = []
+        for j in tqdm(range(1000), desc="Increase voters"):
+            preferences = get_preferences(candidates, VOTERS[i])
+            not_important_list.append(get_impact(candidates, preferences))
+        impact = np.average(not_important_list, axis=0)
+        episodes.append(impact)
+        print("*******************")
+        print("Candidates: ", candidates)
+        print("# voters: ", str(VOTERS[i]))
+        print("Impact: ", impact)
+
+    plot_bars(episodes, ExperimentType.INCREASE_VOTERS)
+
+
+def plot_bars(episodes, experiment_type):
+    # plot parameters
+    labels = ('plurality', 'vote_for_two', 'borda_count', 'anti_plurality')
+    y_pos = np.arange(len(labels))
+    fig, ax = plt.subplots(figsize=(10, 5))
+    width = 0.2
+    N = 12
+    EXPERIMENT_NAME = DISTRIBUTION_F.name + ' distribution and '
+    if experiment_type == ExperimentType.INCREASE_CANDIDATES:
+        EXPERIMENT_NAME += str(VOTERS[0]) + ' voters'
+    else:
+        EXPERIMENT_NAME += str(len(CANDIDATES_NAMES[2])) + ' candidates'
+    for i in range(len(episodes)):
+        impact = episodes[i]
         print("Impact = ", impact)
-        xs = y_pos + width*i
+        xs = y_pos + width * i
         ys = impact
-        ax.barh(xs, ys, width, align='center', label=str(n_candidates)+' candidates')
-        ax.plot(impact, y_pos + width*i, 's', markersize=7)
+
+        label_ = str(len(CANDIDATES_NAMES[i])) + ' candidates' if experiment_type == ExperimentType.INCREASE_CANDIDATES \
+            else str(VOTERS[i]) + ' voters'
+        ax.barh(xs, ys, width, align='center', label=label_)
+        ax.plot(impact, y_pos + width * i, 's', markersize=7)
         for i, j in zip(ys, xs):
             ax.annotate(str(np.round(i, 3)), xy=(i, j),
                         horizontalalignment='right',
                         verticalalignment='bottom', size=10)
         ax.set_yticks(y_pos + width, labels=labels)
         ax.invert_yaxis()
+        N += 4
     ax.set_xlabel('Impact')
-    ax.set_title(EXPERIMENT_NAME)
+    # ax.set_title(EXPERIMENT_NAME)
     ax.legend()
     ax.axvline(0, color='k', linewidth=1)
+    plt.title(EXPERIMENT_NAME)
+    plt.suptitle('Impact Overall Happiness')
+    # plt.show()
+    global IMAGE_ID
+    plt.savefig('OverallHappiness_'+ str(IMAGE_ID)+ '.png')
+    IMAGE_ID += 1
 
 
-elif EXPERIMENT_TYPE == ExperimentType.INCREASE_VOTERS:
-    CANDIDATES_NAMES = (
-        "A",
-        "B",
-        "C",
-        "D",
-    )
+increase_candidates()
+print()
+print()
+increase_voters()
 
-    CANDIDATES = np.arange(len(CANDIDATES_NAMES))
 
-    PREFERENCES = [
-        np.array([[0, 1, 2, 3], [1, 2, 3, 0], [2, 3, 0, 1], [0, 1, 2, 3]]),
-        np.array([[0, 1, 2, 3], [1, 2, 3, 0], [2, 3, 0, 1],
-                  [0, 1, 2, 3], [1, 2, 3, 0], ]),
-        np.array(
-            [
-                [2, 1, 0, 3],
-                [1, 2, 3, 0],
-                [2, 3, 0, 1],
-                [0, 1, 2, 3],
-                [2, 1, 3, 0],
-                [2, 3, 0, 1],
-                [0, 1, 2, 3],
-            ]
-        ),
-    ]
-
-    for i in range(len(PREFERENCES)):
-        n_candidates = len(CANDIDATES)
-        n_voters = len(PREFERENCES[i])
-        print("********************")
-        print(str(n_voters) + ' voters')
-        TVA = TacticalVotingAnalyst(CANDIDATES, CANDIDATES_NAMES, PREFERENCES[i])
-        impact = []
-        for V_scheme in VotingScheme:
-            impact.append(TVA.impact_overall_happiness(voting_scheme=V_scheme,
-                                                                 happiness_scheme=HAPPINESS_SCHEME))
-        impact = [x * 100 for x in impact]
-        print("Impact = ", impact)
-        xs = y_pos + width*i
-        ys = impact
-        ax.barh(xs, ys, width, align='center', label=str(n_voters)+' voters')
-        ax.plot(impact, y_pos + width*i, 's', markersize=7)
-        for i, j in zip(ys, xs):
-            ax.annotate(str(np.round(i, 3)), xy=(i, j),
-                        horizontalalignment='right',
-                        verticalalignment='bottom', size=10)
-        ax.set_yticks(y_pos + width, labels=labels)
-        ax.invert_yaxis()
-    ax.set_xlabel('Impact')
-    ax.set_title(EXPERIMENT_NAME)
-    ax.legend()
-    ax.axvline(0, color='k', linewidth=1)
-
-# plt.show()
-plt.savefig(EXPERIMENT_TYPE.name + '.png')
