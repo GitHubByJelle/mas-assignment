@@ -34,7 +34,7 @@ for candidates_names in candidates_names_lst:
                 # Create random preferences
                 preferences, voter_counts, observations = init_voters(
                     candidates_names,
-                    distribution_function=DistributionTypes.two_peaks,
+                    distribution_function=distribution,
                     voters_count=voters_count,
                     plot=False,
                 )
