@@ -38,7 +38,12 @@ class TacticalVotingAnalyst:
         :param optimize_voters: whether to reduces the voters to their unique preferences
         :param verbose: decides if stuff will be printed out (otherwise print will be ignored)
         """
-        self.preferences = preferences
+        if isinstance(preferences[0][0], str):
+            self.preferences = tuple(
+                tuple(candidate_names.index(a) for a in p) for p in observations
+            )
+        else:
+            self.preferences = preferences
         if isinstance(preferences, np.ndarray):
             preferences = tuple(tuple(p) for p in preferences)
         self.print = Logger(verbose)
