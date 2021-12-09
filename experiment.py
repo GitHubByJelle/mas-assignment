@@ -157,7 +157,8 @@ class Experiment:
         # _, _, _, new_outcome = scheme_tactical_options[0]
         scheme_risk = self.tva.calculate_risk(
             scheme_tactical_options, vs, self.happiness_scheme, version=self.risk_type)
-        scheme_happiness = self.tva.overall_happiness(vs)
+        scheme_happiness = self.tva.overall_happiness(
+            vs, self.happiness_scheme)
 
         return scheme_risk, scheme_happiness
 
@@ -174,6 +175,7 @@ class Experiment:
         ax.legend(loc="center left", bbox_to_anchor=(1, 0.5))
         plt.xlabel("Risk")
         plt.ylabel("Happiness")
+        plt.title("Overall Happiness vs. Risk")
 
     def apply_jitter(self, points, multi=False):
         if multi:

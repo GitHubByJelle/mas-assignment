@@ -118,6 +118,19 @@ def experiment():
     )
     plt.show()
 
+def sample_preferences(candidates_names, distribution, n_voters):
+    preferences = []
+    for candidate_set in candidates_names:
+        frequencies, voter_counts, observations = init_voters(
+            candidate_set, distribution_function=distribution, voters_count=n_voters
+        )
+
+        preferences_ = tuple(
+            tuple(candidate_set.index(a) for a in p) for p in observations
+        )
+        preferences.append(preferences_)
+
+    return preferences
 
 if __name__ == "__main__":
     experiment()
