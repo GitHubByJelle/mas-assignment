@@ -445,9 +445,9 @@ class TacticalVotingAnalyst:
                 tuple(to for to in tactical_options if len(to) > 0)
             ) / len(tactical_options)
         elif version == 1:
-            tactical_options = self.determine_tactical_options(
+            """tactical_options = self.determine_tactical_options(
                 voting_scheme, happiness_scheme
-            )
+            )"""
             number_candidates = len(self.voting_situation.candidates)
             x = 0
             for voter_tactical_options in tactical_options:
@@ -457,14 +457,12 @@ class TacticalVotingAnalyst:
             risk = x / len(tactical_options)
 
         elif version == 2:
-            true_H = self.overall_happiness(voting_scheme, happiness_scheme)
             diff = 0
 
-            for voter in self.voting_situation.voters:
-                if len(voter.tactical_options) > 0:
-                    pref = voter.tactical_options[0]
-                    new_H = pref[2]
-                    diff += new_H - true_H
+            for voter in tactical_options:
+                if len(voter) > 0:
+                    pref = voter[0]
+                    diff += pref[2] - pref[1]
             """
             risk = sum(
                 v.tactical_options[0][2] - true_H
