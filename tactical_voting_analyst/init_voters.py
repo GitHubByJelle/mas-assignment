@@ -76,7 +76,7 @@ def test():
 
 def experiment():
     candidates = ("A", "B", "C", "D", "E")
-    dist_types = tuple(DistributionTypes)[:-1]
+    dist_types = tuple(DistributionTypes)
     happinesses = np.zeros(len(dist_types))
     count = 100
     for _ in range(count):
@@ -114,7 +114,10 @@ def experiment():
     plt.bar(
         np.arange(len(happinesses)),
         happinesses,
-        tick_label=[ds for ds in dist_types],
+        tick_label=[
+            f'{str(ds).split(".")[1].replace("_", " ")}\nValue={happinesses[i]:.3f}'
+            for i, ds in enumerate(dist_types)
+        ],
     )
     plt.show()
 
