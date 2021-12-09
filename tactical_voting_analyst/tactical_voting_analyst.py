@@ -38,7 +38,13 @@ class TacticalVotingAnalyst:
         :param optimize_voters: whether to reduces the voters to their unique preferences
         :param verbose: decides if stuff will be printed out (otherwise print will be ignored)
         """
-        self.preferences = preferences
+        if isinstance(preferences[0][0], str):
+            self.preferences = tuple(
+                tuple(candidate_names.index(a) for a in p)
+                for p in observations
+            )
+        else:
+            self.preferences = preferences
         if isinstance(preferences, np.ndarray):
             preferences = tuple(tuple(p) for p in preferences)
         self.print = Logger(verbose)
@@ -167,7 +173,7 @@ class TacticalVotingAnalyst:
         # ranked_candidates_id = np.argsort(-self.get_winner(voting_scheme))
         outcome = self.get_winner(voting_scheme)
 
-        return sum(  # TODO (by Giulio): consider using average rather than sum
+        return sum(
             voter.determine_happiness(
                 voter.outcome_to_ranked_ids(outcome), happiness_scheme
             )
@@ -176,7 +182,9 @@ class TacticalVotingAnalyst:
         ) / len(self.voting_situation.voters)
 
     def determine_tactical_options(
-        self, voting_scheme: VotingScheme, happiness_scheme: HappinessScheme,
+        self,
+        voting_scheme: VotingScheme,
+        happiness_scheme: HappinessScheme,
     ) -> list[list]:
         """
         Determine the tactical voting options for all voters
