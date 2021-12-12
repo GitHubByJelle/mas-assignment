@@ -10,8 +10,7 @@ from experiment import Experiment, ExperimentType
 def generate_experiment(argv: list[str]):
 
     try:
-        opts, _ = getopt.getopt(
-            argv, shortopts="", longopts=["exp_folder_name="])
+        opts, _ = getopt.getopt(argv, shortopts="", longopts=["exp_folder_name="])
 
     except getopt.GetoptError as e:
         print("Error: ", e)
@@ -55,7 +54,7 @@ def generate_experiment(argv: list[str]):
         voting_schemes=voting_schemes,
         happiness_scheme=happiness_scheme,
         tactical_strategy=tactical_strategy,
-        risk_type=risk_type
+        risk_type=risk_type,
     )
 
     experiment.run()

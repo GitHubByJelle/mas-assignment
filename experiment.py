@@ -37,9 +37,7 @@ class Experiment:
 
     def run_simple_experiment(self):
         # self.voters = [Voter(preference) for preference in self.preferences]
-        self.tva = self.TVA(
-            self.candidates, self.candidates_names, self.preferences
-        )
+        self.tva = self.TVA(self.candidates, self.candidates_names, self.preferences)
         ax = self.create_ax()
         schemes_happiness_risk = []
         for vs in self.voting_schemes:
@@ -59,8 +57,7 @@ class Experiment:
         ax = self.create_ax()
         schemes_happiness_risk = {}
         for i, cnames in enumerate(self.candidates_names):
-            self.tva = self.TVA(
-                self.candidates[i], cnames, self.preferences[i])
+            self.tva = self.TVA(self.candidates[i], cnames, self.preferences[i])
             for vs in self.voting_schemes:
                 vs_string = str(vs.__repr__())[14:].split(":")[0]
                 scheme_risk, scheme_happiness = self.get_risk_and_happiness(vs)
@@ -68,10 +65,7 @@ class Experiment:
                     schemes_happiness_risk[vs_string] = []
                 else:
                     schemes_happiness_risk[vs_string].append(
-                        (
-                            (scheme_happiness, scheme_risk),
-                            f"{len(cnames)}",
-                        )
+                        ((scheme_happiness, scheme_risk), f"{len(cnames)}",)
                     )
 
         all_x_points = []
@@ -79,16 +73,13 @@ class Experiment:
         all_annots = []
         for vs in schemes_happiness_risk:
             print(vs, schemes_happiness_risk[vs])
-            ys, xs = list(
-                zip(*[vs_n[0] for vs_n in schemes_happiness_risk[vs]])
-            )
+            ys, xs = list(zip(*[vs_n[0] for vs_n in schemes_happiness_risk[vs]]))
             xs = self.apply_jitter(xs, multi=True)
             all_x_points += xs
             all_y_points += ys
             annots = [vs_n[1] for vs_n in schemes_happiness_risk[vs]]
             all_annots += annots
-            ax.scatter(xs,
-                       ys, label=vs, alpha=0.7)
+            ax.scatter(xs, ys, label=vs, alpha=0.7)
 
         for i, txt in enumerate(all_annots):
             ax.annotate(txt, (all_x_points[i], all_y_points[i]))
@@ -110,10 +101,7 @@ class Experiment:
                     schemes_happiness_risk[vs_string] = []
                 else:
                     schemes_happiness_risk[vs_string].append(
-                        (
-                            (scheme_happiness, scheme_risk),
-                            f"{voters.shape[0]}",
-                        )
+                        ((scheme_happiness, scheme_risk), f"{voters.shape[0]}",)
                     )
 
         all_x_points = []
@@ -121,16 +109,13 @@ class Experiment:
         all_annots = []
         for vs in schemes_happiness_risk:
             print(vs, schemes_happiness_risk[vs])
-            ys, xs = list(
-                zip(*[vs_n[0] for vs_n in schemes_happiness_risk[vs]])
-            )
+            ys, xs = list(zip(*[vs_n[0] for vs_n in schemes_happiness_risk[vs]]))
             xs = self.apply_jitter(xs, multi=True)
             all_x_points += xs
             all_y_points += ys
             annots = [vs_n[1] for vs_n in schemes_happiness_risk[vs]]
             all_annots += annots
-            ax.scatter(xs,
-                       ys, label=vs, alpha=0.7)
+            ax.scatter(xs, ys, label=vs, alpha=0.7)
 
         for i, txt in enumerate(all_annots):
             ax.annotate(txt, (all_x_points[i], all_y_points[i]))
@@ -139,26 +124,26 @@ class Experiment:
         plt.savefig(self.exp_path + "/results.png")
 
     def get_risk_and_happiness(self, vs):
-        if self.tactical_strategy == 'PAIRED':
+        if self.tactical_strategy == "PAIRED":
             scheme_tactical_options = self.tva.determine_paired_tactical_options(
                 vs, self.happiness_scheme
             )
-        elif self.tactical_strategy == 'RUN-OFF':
+        elif self.tactical_strategy == "RUN-OFF":
             scheme_tactical_options = self.tva.determine_tactical_options_run_off_election(
                 self.happiness_scheme
             )
-        elif self.tactical_strategy == 'BASIC':
+        elif self.tactical_strategy == "BASIC":
             scheme_tactical_options = self.tva.determine_tactical_options(
                 vs, self.happiness_scheme
             )
         else:
-            raise Exception('Invalid tactical strategy')
+            raise Exception("Invalid tactical strategy")
         # print('=======', vs, scheme_tactical_options)
         # _, _, _, new_outcome = scheme_tactical_options[0]
         scheme_risk = self.tva.calculate_risk(
-            scheme_tactical_options, vs, self.happiness_scheme, version=self.risk_type)
-        scheme_happiness = self.tva.overall_happiness(
-            vs, self.happiness_scheme)
+            scheme_tactical_options, vs, self.happiness_scheme, version=self.risk_type
+        )
+        scheme_happiness = self.tva.overall_happiness(vs, self.happiness_scheme)
 
         return scheme_risk, scheme_happiness
 

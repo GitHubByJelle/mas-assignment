@@ -26,9 +26,7 @@ class Voter:
         self.tactical_preferences = preferences
 
     def determine_happiness(
-        self,
-        ranked_candidates_id: np.ndarray,
-        happiness_scheme: HappinessScheme,
+        self, ranked_candidates_id: np.ndarray, happiness_scheme: HappinessScheme,
     ):
         """
         Determine self happiness
@@ -62,9 +60,7 @@ class Voter:
 
         elif happiness_scheme == HappinessScheme.linear_weight:
             linear_weights = np.arange(len(ranked_candidates_id), 0, -1)
-            norm_value = np.dot(
-                linear_weights, np.arange(len(pref_norm)) - indices
-            )
+            norm_value = np.dot(linear_weights, np.arange(len(pref_norm)) - indices)
             argsorting = np.arange(len(ranked_candidates_id))
             argsorting[ranked_candidates_id] = argsorting.copy()
             indices = argsorting[true_preferences]
@@ -74,12 +70,8 @@ class Voter:
             happiness = 1 - happiness / norm_value
 
         elif happiness_scheme == HappinessScheme.squared_weight:
-            squared_weights = np.square(
-                np.arange(len(ranked_candidates_id), 0, -1)
-            )
-            norm_value = np.dot(
-                squared_weights, np.arange(len(pref_norm)) - indices
-            )
+            squared_weights = np.square(np.arange(len(ranked_candidates_id), 0, -1))
+            norm_value = np.dot(squared_weights, np.arange(len(pref_norm)) - indices)
             argsorting = np.arange(len(ranked_candidates_id))
             argsorting[ranked_candidates_id] = argsorting.copy()
             indices = argsorting[true_preferences]
@@ -88,10 +80,8 @@ class Voter:
             )
             happiness = 1 - happiness / norm_value
         elif happiness_scheme == HappinessScheme.cubed_weight:
-            cubed_weights = np.power(np.arange(len(ranked_candidates_id), 0, -1),3)
-            norm_value = np.dot(
-                cubed_weights, np.arange(len(pref_norm)) - indices
-            )
+            cubed_weights = np.power(np.arange(len(ranked_candidates_id), 0, -1), 3)
+            norm_value = np.dot(cubed_weights, np.arange(len(pref_norm)) - indices)
             argsorting = np.arange(len(ranked_candidates_id))
             argsorting[ranked_candidates_id] = argsorting.copy()
             indices = argsorting[true_preferences]
@@ -99,7 +89,6 @@ class Voter:
                 cubed_weights, np.arange(len(true_preferences)) - indices
             )
             happiness = 1 - happiness / norm_value
-        
 
         return happiness
 

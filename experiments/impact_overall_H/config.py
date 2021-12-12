@@ -21,13 +21,18 @@ IMAGE_ID = 2
 
 
 def get_impact(candidates, preferences):
-    TVA = TacticalVotingAnalyst(candidates=np.arange(len(candidates)),
-                                candidate_names=candidates,
-                                preferences=preferences)
+    TVA = TacticalVotingAnalyst(
+        candidates=np.arange(len(candidates)),
+        candidate_names=candidates,
+        preferences=preferences,
+    )
     impact = []
     for V_scheme in VotingScheme:
-        impact.append(TVA.impact_overall_happiness(voting_scheme=V_scheme,
-                                                   happiness_scheme=HAPPINESS_SCHEME))
+        impact.append(
+            TVA.impact_overall_happiness(
+                voting_scheme=V_scheme, happiness_scheme=HAPPINESS_SCHEME
+            )
+        )
     impact = [x * 100 for x in impact]
     return impact
 
@@ -44,9 +49,12 @@ def get_preferences(candidates, n_voters):
         a = []
         for ch in voter:
             id = 0
-            if ch == 'B': id = 1
-            elif ch == 'C': id = 2
-            elif ch == 'D': id = 3
+            if ch == "B":
+                id = 1
+            elif ch == "C":
+                id = 2
+            elif ch == "D":
+                id = 3
             a.append(id)
         new_preferences.append(a)
     return np.array(new_preferences)
@@ -91,42 +99,49 @@ def increase_voters():
 
 def plot_bars(episodes, experiment_type):
     # plot parameters
-    labels = ('plurality', 'vote_for_two', 'borda_count', 'anti_plurality')
+    labels = ("plurality", "vote_for_two", "borda_count", "anti_plurality")
     y_pos = np.arange(len(labels))
     fig, ax = plt.subplots(figsize=(10, 5))
     width = 0.2
     N = 12
-    EXPERIMENT_NAME = DISTRIBUTION_F.name + ' distribution and '
+    EXPERIMENT_NAME = DISTRIBUTION_F.name + " distribution and "
     if experiment_type == ExperimentType.INCREASE_CANDIDATES:
-        EXPERIMENT_NAME += str(VOTERS[0]) + ' voters'
+        EXPERIMENT_NAME += str(VOTERS[0]) + " voters"
     else:
-        EXPERIMENT_NAME += str(len(CANDIDATES_NAMES[2])) + ' candidates'
+        EXPERIMENT_NAME += str(len(CANDIDATES_NAMES[2])) + " candidates"
     for i in range(len(episodes)):
         impact = episodes[i]
         print("Impact = ", impact)
         xs = y_pos + width * i
         ys = impact
 
-        label_ = str(len(CANDIDATES_NAMES[i])) + ' candidates' if experiment_type == ExperimentType.INCREASE_CANDIDATES \
-            else str(VOTERS[i]) + ' voters'
-        ax.barh(xs, ys, width, align='center', label=label_)
-        ax.plot(impact, y_pos + width * i, 's', markersize=7)
+        label_ = (
+            str(len(CANDIDATES_NAMES[i])) + " candidates"
+            if experiment_type == ExperimentType.INCREASE_CANDIDATES
+            else str(VOTERS[i]) + " voters"
+        )
+        ax.barh(xs, ys, width, align="center", label=label_)
+        ax.plot(impact, y_pos + width * i, "s", markersize=7)
         for i, j in zip(ys, xs):
-            ax.annotate(str(np.round(i, 3)), xy=(i, j),
-                        horizontalalignment='right',
-                        verticalalignment='bottom', size=10)
+            ax.annotate(
+                str(np.round(i, 3)),
+                xy=(i, j),
+                horizontalalignment="right",
+                verticalalignment="bottom",
+                size=10,
+            )
         ax.set_yticks(y_pos + width, labels=labels)
         ax.invert_yaxis()
         N += 4
-    ax.set_xlabel('Impact')
+    ax.set_xlabel("Impact")
     # ax.set_title(EXPERIMENT_NAME)
     ax.legend()
-    ax.axvline(0, color='k', linewidth=1)
+    ax.axvline(0, color="k", linewidth=1)
     plt.title(EXPERIMENT_NAME)
-    plt.suptitle('Impact Overall Happiness')
+    plt.suptitle("Impact Overall Happiness")
     # plt.show()
     global IMAGE_ID
-    plt.savefig('OverallHappiness_'+ str(IMAGE_ID)+ '.png')
+    plt.savefig("OverallHappiness_" + str(IMAGE_ID) + ".png")
     IMAGE_ID += 1
 
 
@@ -134,5 +149,3 @@ increase_candidates()
 print()
 print()
 increase_voters()
-
-

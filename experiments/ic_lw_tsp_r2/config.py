@@ -4,24 +4,18 @@ from tactical_voting_analyst.voting_schemes import VotingScheme
 from tactical_voting_analyst.happiness_schemes import HappinessScheme
 from experiment import ExperimentType
 
-CANDIDATES_NAMES = (("A", "B", "C"),
-                    ("A", "B", "C", "D"),
-                    ("A", "B", "C", "D", "E"),
-                    ("A", "B", "C", "D", "E", "F"))
+CANDIDATES_NAMES = (
+    ("A", "B", "C"),
+    ("A", "B", "C", "D"),
+    ("A", "B", "C", "D", "E"),
+    ("A", "B", "C", "D", "E", "F"),
+)
 
 CANDIDATES = [np.arange(len(c)) for c in CANDIDATES_NAMES]
 
 PREFERENCES = (
     np.array(
-        [
-            [0, 1, 2],
-            [1, 2, 0],
-            [2, 0, 1],
-            [0, 1, 2],
-            [1, 2, 0],
-            [2, 0, 1],
-            [0, 1, 2],
-        ]
+        [[0, 1, 2], [1, 2, 0], [2, 0, 1], [0, 1, 2], [1, 2, 0], [2, 0, 1], [0, 1, 2],]
     ),
     np.array(
         [
@@ -71,6 +65,6 @@ HAPPINESS_SCHEME = HappinessScheme.linear_weight
 
 EXPERIMENT_TYPE = ExperimentType.INCREASE_CANDIDATES
 
-TACTICAL_STRATEGY = 'PAIRED'
+TACTICAL_STRATEGY = "PAIRED"
 
 RISK_TYPE = 2

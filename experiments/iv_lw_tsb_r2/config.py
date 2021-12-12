@@ -15,8 +15,7 @@ CANDIDATES = np.arange(len(CANDIDATES_NAMES))
 
 PREFERENCES = [
     np.array([[0, 1, 2, 3], [1, 2, 3, 0], [2, 3, 0, 1], [0, 1, 2, 3]]),
-    np.array([[0, 1, 2, 3], [1, 2, 3, 0], [2, 3, 0, 1],
-             [0, 1, 2, 3], [1, 2, 3, 0], ]),
+    np.array([[0, 1, 2, 3], [1, 2, 3, 0], [2, 3, 0, 1], [0, 1, 2, 3], [1, 2, 3, 0],]),
     np.array(
         [
             [0, 1, 2, 3],
@@ -43,6 +42,6 @@ HAPPINESS_SCHEME = HappinessScheme.linear_weight
 
 EXPERIMENT_TYPE = ExperimentType.INCREASE_VOTERS
 
-TACTICAL_STRATEGY = 'BASIC'
+TACTICAL_STRATEGY = "BASIC"
 
 RISK_TYPE = 2

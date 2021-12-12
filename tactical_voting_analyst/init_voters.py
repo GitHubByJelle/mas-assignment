@@ -121,6 +121,7 @@ def experiment():
     )
     plt.show()
 
+
 def sample_preferences(candidates_names, distribution, n_voters):
     preferences = []
     for candidate_set in candidates_names:
@@ -134,6 +135,7 @@ def sample_preferences(candidates_names, distribution, n_voters):
         preferences.append(preferences_)
 
     return preferences
+
 
 if __name__ == "__main__":
     experiment()

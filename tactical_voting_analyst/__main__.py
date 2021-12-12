@@ -110,5 +110,10 @@ def main():
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    args = parser.parse_args()
+    args = parser.add_argument(
+        "distribution-type",
+        type=str,
+        choiches=("normal", "two-peaks", "uniform"),
+        default="normal",
+    )
     main()

@@ -4,6 +4,7 @@ import numpy as np
 from tactical_voting_analyst.voting_schemes import VotingScheme
 from tactical_voting_analyst.happiness_schemes import HappinessScheme
 
+
 def unfold_preferences(candidates: tuple[str]) -> list[tuple[int, ...]]:
     proto_preferences = tuple(
         v * (tuple(candidates.index(c) for c in p),)
@@ -15,10 +16,21 @@ def unfold_preferences(candidates: tuple[str]) -> list[tuple[int, ...]]:
 
     return new_preferences
 
-candidates_names_lst = [list(map(lambda x: chr(x+65),list(range(n)))) for n in [4, 6, 8]]
+
+candidates_names_lst = [
+    list(map(lambda x: chr(x + 65), list(range(n)))) for n in [4, 6, 8]
+]
 voters_count_lst = [7, 35, 70]
-distributions = [DistributionTypes.uniform, DistributionTypes.normal, DistributionTypes.two_peaks]
-voting_schemes = [VotingScheme.plurality, VotingScheme.anti_plurality, VotingScheme.borda_count]
+distributions = [
+    DistributionTypes.uniform,
+    DistributionTypes.normal,
+    DistributionTypes.two_peaks,
+]
+voting_schemes = [
+    VotingScheme.plurality,
+    VotingScheme.anti_plurality,
+    VotingScheme.borda_count,
+]
 
 # For all candidates, voters_count and distributions
 for candidates_names in candidates_names_lst:
@@ -26,10 +38,12 @@ for candidates_names in candidates_names_lst:
         for distribution in distributions:
             for voting_scheme in voting_schemes:
                 # Get name of document
-                name = "majority_graphs/Cand{}_Vot{}_dist-{}_Scheme-{}".format(len(candidates_names),
-                                                     voters_count,
-                                                     distribution._name_,
-                                                     voting_scheme._name_)
+                name = "majority_graphs/Cand{}_Vot{}_dist-{}_Scheme-{}".format(
+                    len(candidates_names),
+                    voters_count,
+                    distribution._name_,
+                    voting_scheme._name_,
+                )
 
                 # Create random preferences
                 preferences, voter_counts, observations = init_voters(
@@ -43,9 +57,7 @@ for candidates_names in candidates_names_lst:
                 preferences = unfold_preferences(candidates_names)
 
                 # Define candidate int for TVA
-                candidates = np.arange(
-                        len(candidates_names)
-                    )
+                candidates = np.arange(len(candidates_names))
 
                 # Create TVA (consists of voting situation, needed for analyses
                 TVA = TacticalVotingAnalyst(candidates, candidates_names, preferences)
@@ -54,7 +66,10 @@ for candidates_names in candidates_names_lst:
                 impacted_majority_table = TVA.voting_situation.get_impact_tactical_options_majority_table(
                     TVA.determine_tactical_options(
                         VotingScheme.borda_count, HappinessScheme.cubed_weight
-                        ))
+                    )
+                )
 
                 # Create a visualisation and save with the correct name
-                TVA.voting_situation.create_majority_graph_preferences(impacted_majority_table, file_name=name)
+                TVA.voting_situation.create_majority_graph_preferences(
+                    impacted_majority_table, file_name=name
+                )
