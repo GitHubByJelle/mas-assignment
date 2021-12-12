@@ -9,16 +9,20 @@ from .init_voters import init_voters, DistributionTypes
 import numpy as np
 
 
-def main(candidates_count: int, voters_count: int, distribution_name: str):
+def main(
+    candidates_count: int,
+    voters_count: int,
+    distribution_name: str,
+    happiness_scheme_name: str,
+    voting_scheme_name: str,
+):
 
     candidates_names = tuple(string.ascii_uppercase[:candidates_count])
     # E01.3
     # Set up Candidates
-    distribution_type = {
-        "normal": DistributionTypes.normal,
-        "uniform": DistributionTypes.uniform,
-        "two-peaks": DistributionTypes.two_peaks,
-    }[distribution_name]
+    distribution_type = DistributionTypes.__dict__[distribution_name]
+    happiness_scheme = HappinessScheme.__dict__[happiness_scheme_name]
+    voting_scheme = VotingScheme.__dict__[voting_scheme_name]
 
     frequencies, voters_count, observations = init_voters(
         candidates=candidates_names,
@@ -37,10 +41,7 @@ def main(candidates_count: int, voters_count: int, distribution_name: str):
     )
     risks = [
         tva.calculate_risk(
-            tactical_options,
-            VotingScheme.borda_count,
-            HappinessScheme.borda_count,
-            version=i,
+            tactical_options, voting_scheme, happiness_scheme, version=i,
         )
         for i in range(3)
     ]
@@ -125,8 +126,24 @@ if __name__ == "__main__":
     parser.add_argument(
         "--voters-count", type=int, default=100, required=False
     )
+    parser.add_argument(
+        "--happiness-scheme",
+        choices=tuple(h.name for h in HappinessScheme),
+        default="cubed_weight",
+    )
+    parser.add_argument(
+        "--voting-scheme",
+        choices=tuple(h.name for h in VotingScheme),
+        default="borda_count",
+    )
     args = parser.parse_args()
     assert (
         0 < args.candidates_count < 8
     ), "ERROR: Candidates count must be between 0 and 8"
-    main(args.candidates_count, args.voters_count, args.distribution_type)
+    main(
+        args.candidates_count,
+        args.voters_count,
+        args.distribution_type,
+        happiness_scheme_name=args.happiness_scheme,
+        voting_scheme_name=args.voting_scheme,
+    )

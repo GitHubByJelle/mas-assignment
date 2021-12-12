@@ -8,9 +8,14 @@ The easies way to run this project is to use conda. If you have conda already in
 conda create --name tactical_voting_analyst --file conda_env.txt
 conda activate tactical_voting_analyst
 ```
+Alternatively, with pip (less secure):
+```
+pip install -r pip_env.txt
+```
+## Running From the Command Line
 
-
-## Running tactical voting analyst to show the tactical options
+With the terminal navigate outside the folder `tactical_voting_analyst`. 
+The default output will show voters tactical options and can be run by:
 
 ``` bash
 python -m tactical_voting_analyst
