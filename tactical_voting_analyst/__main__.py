@@ -1,41 +1,42 @@
+import string
 from argparse import ArgumentParser
-from .tactical_voting_analyst import *
+from .tactical_voting_analyst import TacticalVotingAnalyst
 
 # from .candidate import *
 from .voter import *
 from .voting_schemes import VotingScheme
+from .init_voters import init_voters, DistributionTypes
 import numpy as np
 
 
-def main():
+def main(candidates_count: int, voters_count: int, distribution_name: str):
+
+    candidates_names = tuple(string.ascii_uppercase[:candidates_count])
     # E01.3
     # Set up Candidates
-    candidates_names = (
-        "A",
-        "B",
-        "C",
-        "D",
-    )  # will be used only for representation
-    candidates = np.arange(
-        len(candidates_names)
-    )  # assign integer to each candidate, so we can use numpy
-    preferences = [
-        (0, 1, 2, 3),
-        (1, 2, 3, 0),
-        (2, 3, 0, 1),
-        (0, 1, 2, 3),
-        (1, 2, 3, 0),
-        (2, 3, 0, 1),
-        (0, 1, 2, 3),
-    ]
+    distribution_type = {
+        "normal": DistributionTypes.normal,
+        "uniform": DistributionTypes.uniform,
+        "two-peaks": DistributionTypes.two_peaks,
+    }[distribution_name]
+
+    frequencies, voters_count, observations = init_voters(
+        candidates=candidates_names,
+        voters_count=voters_count,
+        distribution_function=distribution_type,
+    )
+    tva = TacticalVotingAnalyst(
+        candidates=np.arange(len(candidates_names)),
+        candidate_names=candidates_names,
+        preferences=observations,
+        verbose=True,
+    )
     # Create TVA
-    TVA = TacticalVotingAnalyst(candidates, candidates_names, preferences)
-    print("\n", TVA.get_winner(np.array([3.0, 2.0, 1.0, 0.0])))
-    tactical_options = TVA.determine_tactical_options(
+    tactical_options = tva.determine_tactical_options(
         VotingScheme.borda_count, HappinessScheme.borda_count
     )
     risks = [
-        TVA.calculate_risk(
+        tva.calculate_risk(
             tactical_options,
             VotingScheme.borda_count,
             HappinessScheme.borda_count,
@@ -43,7 +44,7 @@ def main():
         )
         for i in range(3)
     ]
-    print(f"The risk is :{risks}")
+    print(f"The risks is: {risks}")
 
     # print(TVA.overall_happiness())
     # TVA.determine_tactical_options(
@@ -110,10 +111,22 @@ def main():
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    args = parser.add_argument(
-        "distribution-type",
-        type=str,
-        choiches=("normal", "two-peaks", "uniform"),
-        default="normal",
+    parser.add_argument(
+        "--candidates-count", type=int, default=5, required=False
     )
-    main()
+    parser.add_argument(
+        "--distribution-type",
+        type=str,
+        choices=("normal", "two-peaks", "uniform"),
+        default="normal",
+        required=False,
+        help="The distribution from which the voters preferences will be sampled",
+    )
+    parser.add_argument(
+        "--voters-count", type=int, default=100, required=False
+    )
+    args = parser.parse_args()
+    assert (
+        0 < args.candidates_count < 8
+    ), "ERROR: Candidates count must be between 0 and 8"
+    main(args.candidates_count, args.voters_count, args.distribution_type)

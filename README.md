@@ -8,12 +8,16 @@ The easies way to run this project is to use conda. If you have conda already in
 conda create --name tactical_voting_analyst --file conda_env.txt
 conda activate tactical_voting_analyst
 ```
-pip install -r requirements.txt
 
-Run main by:
 
-```
+## Running tactical voting analyst to show the tactical options
+
+``` bash
 python -m tactical_voting_analyst
+```
+Or, to show the help with some options:
+``` bash
+python -m tactical_voting_analyst -h
 ```
 
 ## Generating a new experiment
