@@ -24,6 +24,7 @@ Or, to show the help with some options:
 ``` bash
 python -m tactical_voting_analyst -h
 ```
+Example selecting 
 
 ## Generating a new experiment
 

@@ -20,6 +20,7 @@ def main(
     candidates_names = tuple(string.ascii_uppercase[:candidates_count])
     # E01.3
     # Set up Candidates
+
     distribution_type = DistributionTypes.__dict__[distribution_name]
     happiness_scheme = HappinessScheme.__dict__[happiness_scheme_name]
     voting_scheme = VotingScheme.__dict__[voting_scheme_name]
@@ -45,7 +46,9 @@ def main(
         )
         for i in range(3)
     ]
-    print(f"The risks is: {risks}")
+    print(
+        f"The 3 types of risks are (see the report): {[round(r, 4) for r in risks]}"
+    )
 
     # print(TVA.overall_happiness())
     # TVA.determine_tactical_options(
@@ -118,14 +121,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "--distribution-type",
         type=str,
-        choices=("normal", "two-peaks", "uniform"),
-        default="normal",
+        choices=tuple(h.name for h in DistributionTypes),
+        default="uniform",
         required=False,
         help="The distribution from which the voters preferences will be sampled",
     )
-    parser.add_argument(
-        "--voters-count", type=int, default=100, required=False
-    )
+    parser.add_argument("--voters-count", type=int, default=10, required=False)
     parser.add_argument(
         "--happiness-scheme",
         choices=tuple(h.name for h in HappinessScheme),
@@ -137,6 +138,10 @@ if __name__ == "__main__":
         default="borda_count",
     )
     args = parser.parse_args()
+    import json
+
+    print("Arguments used:")
+    print(json.dumps(args.__dict__, indent=4), "\n")
     assert (
         0 < args.candidates_count < 8
     ), "ERROR: Candidates count must be between 0 and 8"
