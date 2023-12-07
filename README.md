@@ -1,4 +1,4 @@
-# MAS Assignment
+# Multi Agent System Assignment
 
 ## Requirements:
 
