@@ -1,4 +1,4 @@
-# Multi Agent System Assignment
+# Multi Agent Systems Assignment
 
 ## Requirements:
 
